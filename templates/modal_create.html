@@ -1,0 +1,29 @@
+<form hx-post="{{ request.path }}" class="modal-content my-2">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">{{title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-12">
+            {{ form.non_form_errors }}
+
+            {% for field in form %}
+            <div class="mb-2">
+                {{field.label_tag}}
+                {{field}}
+                <small class="text-danger">{{ field.errors}}</small>
+                {% if field.help_text %}
+                <small class="help">{{ field.help_text|safe}}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit">Save</button>
+    </div>
+</form>
+

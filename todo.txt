@@ -1,0 +1,2 @@
+Add progress bar on top of question
+Make list item row clickable

@@ -1,0 +1,58 @@
+<form hx-post="{{ request.path }}" class="modal-content my-2">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">{{title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-12">
+            {{form.management_form}}
+            {{ form.non_form_errors }}
+
+            <table class="table table-bordered form-row">
+                <thead class="table-light">
+                    <tr>
+                        {% for field in form.0.visible_fields %}
+                        <th> {{field.label_tag}} </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in form %}
+                        {{row.id}}
+                        {% for field in row.hidden_fields %}
+                            {{field}}
+                        {% endfor %}
+                        <tr>
+                            {% for field in row.visible_fields %}
+                                <td>
+                                    {{field}}
+                                    <small class="text-danger">{{ field.errors}}</small>
+                                    {% if field.help_text %}
+                                        <small class="help">{{ field.help_text|safe}}</small>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit">Save</button>
+    </div>
+</form>
+
+
+<script type="text/javascript">
+    $(function () {
+        $('.form-row tbody tr').formset({
+        deleteText: "<i class='fa fa-trash text-danger'></i>",
+        addText: "<i class='fa fa-plus text-success'></i> Add another item",
+        })
+    })
+</script>

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block content %}
+
+<div class="bg-light col-sm-8 mx-auto">
+    <div class="my-3 p-5">
+        <h5 class="display-6 text-center">{{title}}</h5>
+
+        {% if description %}
+            <div class="text-center my-3">
+                {{description}}
+            </div>
+
+        {% endif %}
+
+        <form action="" method="post">
+            {% csrf_token %}
+
+            <div class="row g-2">
+                {% for field in form %}
+                    <div class="mb-3 col-md-6">
+                        {{field.label_tag}}
+                        {{ field.errors }}
+                        {{field}}
+                        {% if field.help_text %}
+                        <small class="help">{{ field.help_text|safe }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">{{button_label}}</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock content %}

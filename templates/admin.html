@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row my-2">
+    <div class="col">
+        <h3 class=""> Most Recent Exams </h3>
+        <a href="{% url 'exam-create' %}">Add new exam</a>
+
+
+        {% if exams %}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered mg-b-0">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Subject / Type</th>
+                        <th>Class Group</th>
+                        <th>Duration</th>
+                        <th>Author</th>
+                        <th>No. of Questions</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in exams %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'exam-detail' item.id %}">{{item.title}}</a>
+                        </td>
+                        <td>{{item.subject}}/{{item.term}}/{{item.get_exam_type_display}}
+                        </td>
+                        <td>{{item.class_group}} </td>
+                        <td>{{item.get_duration}} </td>
+                        <td>{{item.author}}</td>
+                        <td>{{item.question_count}} </td>
+                        <td>
+                            {% if item.published %}
+                            Published
+                            {% else %}
+                            Not Published
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'pagination.html' with page_obj=exams %}
+        </div>
+        {% else %}
+        <p>No Exam to show.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+
+
+
+{%endblock%}

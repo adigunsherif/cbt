@@ -1,0 +1,21 @@
+<form hx-post="{{ request.path }}" class="modal-content my-2">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">{{object | safe}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+    </div>
+    <div class="modal-body row">
+        <div class="col-12">
+            {{ form.non_form_errors }}
+
+            <p>Are you sure you want to delete {{ object | safe}}?</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger">Yes, delete <i class="fa fa-trash"></i></button>
+    </div>
+</form>
+
+

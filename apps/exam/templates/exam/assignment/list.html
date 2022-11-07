@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content-header %}
+    <div class="az-content-header d-block d-md-flex">
+        <div>
+            <h2 class="az-content-title mg-b-5 mg-b-lg-8">
+                Students' Assignments
+            </h2>
+        </div>
+
+        {% if request.user.role == 'admin' or request.user.role == 'staff' %}
+        <div class="az-dashboard-header-right">
+            <div>
+              <h5><a class="btn btn-success btn-rounded" href="{% url 'assignment-create' %}">Add new assignment</a></h5>
+            </div>
+        </div>
+        {% endif %}
+
+
+    </div>
+{% endblock content-header %}
+
+{% block content %}
+
+<div>
+    {% if object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover mg-b-0 dataTables_wrapper">
+            <thead>
+                <tr>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Classes</th>
+                <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in object_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'assignment-detail' item.id %}">{{item.title}}</a>
+                        </td>
+                        <td>{{item.subject}} </td>
+                        <td>{{item.audience.all | join:", "}}</td>
+                        <td>{{item.created}}</td>
+                        <td>
+                            <a href="{% url 'assignment-update' item.id %}" class="text-waning bs-modal"><i class="typcn typcn-edit"></i> </a>
+                            <a href='#!' data-form-url="{% url 'assignment-delete' item.id %}" class="text-danger bs-modal"><i class="typcn typcn-trash"></i> </a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No assignment to show.</p>
+    {% endif %}
+</div>
+
+
+<div class="modal fade" role="dialog" id="modal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+
+{% endblock content %}

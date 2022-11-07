@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h2 class="az-content-title mg-b-5 mg-b-lg-8">
+    {{exam}} Scores
+</h2>
+
+<div>
+    {% if scores %}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered mg-b-0">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Score</th>
+                    <th>Started on</th>
+                    <th>Sumbitted on</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in scores %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'exam-detail' item.id %}">{{item.user}}</a>
+                        </td>
+                        <td>{{item.score}} / {{item.total_questions}} </td>
+                        <td>{{item.time_started}} </td>
+                        <td>{{item.time_completed}} </td>
+                        <td>
+                            <a href='#!' hx-get="{% url 'score-delete' item.id %}" class="text-danger" hx-target="#dialog" ><i class="fa fa-trash"></i> </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No Attempt for this exam yet.</p>
+    {% endif %}
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h2>
+  Question Bank
+</h2>
+<a class="btn btn-success btn-rounded" href="{% url 'question-create' %}">Add
+  new question</a>
+
+
+<div>
+  {% if object_list %}
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered mg-b-0">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Subject</th>
+          <th> Question </th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in object_list %}
+        <tr>
+          <td> {{forloop.counter}} </td>
+          <td>{{item.subject}}</td>
+          <td>{{item.question | safe }} </td>
+          <td>
+            <a href="{% url 'question-update' item.id %}"><i
+                class="fa fa-edit"></i></a>
+            <a href="{% url 'question-delete' item.id  %}"><i
+                class="fa fa-trash text-danger"></i></a>
+          </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include 'pagination.html'  %}
+  </div>
+  {% else %}
+  <p>No question to show.</p>
+  {% endif %}
+</div>
+
+
+{% endblock content %}

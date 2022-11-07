@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row my-2">
+  <div class="col">
+    <h3 class=""> Students </h3>
+    <span class="clickable-link" hx-get="{% url 'student_create' %}"
+      hx-target="#dialog" role="button">Click here to add a student</span>
+
+
+    {% if object_list %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Username</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% for item in object_list %}
+        <tr>
+          <td>{{forloop.counter}} </td>
+          <td> {{item.get_full_name}} </td>
+          <td> {{item.username}} </td>
+          <td>
+            <span class="clickable-link" hx-get="{% url 'student-update' item.id %}"
+              hx-target="#dialog" role="button"><i class="fa fa-edit"></i></span>
+            <span class="clickable-link" hx-get="{% url 'user-delete' item.id %}"
+              hx-target="#dialog" role="button"><i class="fa fa-trash text-danger"></i></span>
+          </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+    {% else %}
+    <p>There are currently no student registered yet. <span class="clickable-link" hx-get="{% url 'student_create' %}" hx-target="#dialog"  role="button">Click here to add a student</span></p>
+
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+
+{%endblock%}

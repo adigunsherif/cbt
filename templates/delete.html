@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{object | safe}}</h1>
+
+<p>Are you sure you want to delete {{ object | safe}}?</p>
+
+<form action="" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, delete <i class="fa fa-trash"></i></button>
+</form>
+
+{% endblock %}

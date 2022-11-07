@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="az-content-title mg-b-5 mg-b-lg-8">
+    {{title}}
+</h2>
+
+
+<div>
+    <form method="POST" enctype='multipart/form-data'>
+        {% csrf_token %}
+
+        <div>{{ form.non_field_errors }}</div>
+
+        {% for hidden in form.hidden_fields %}
+            {{hidden}}
+        {% endfor %}
+
+        <div class="row">
+            {% for field in form.visible_fields %}
+                <div class="form-group col-12">
+                    {{field.label_tag}}
+                    {{field}}
+                    <small>{{field.help_text}}</small>
+                    <ul class="parsley-errors-list filled" id="parsley-id-5">
+                        {% for error in field.errors %}
+                            <li class="parsley-required">{{error}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+
+
+        <!-- Choiices -->
+
+        <div>
+            {{ formset.management_form }}
+            {{ formset.non_form_errors }}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Choices</th>
+                        <th>IS Correct?</th>
+                        <th><i class="fa fa-trash text-danger"></i> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in formset %}
+                    {{row.id}}
+                    <tr>
+                        <td>{{row.body}}</td>
+                        <td>{{row.is_correct}}</td>
+                        <td>
+                            {% if row.instance.id %}
+                                {{row.DELETE}}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <button type="submit" class="submit-btn btn btn-primary">Save</button>
+
+    </form>
+</div>
+
+{% endblock content %}

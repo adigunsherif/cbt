@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h2>
+    CBT Exams
+</h2>
+<a class="btn btn-success btn-rounded" href="{% url 'exam-create' %}">Add
+    new exam</a>
+
+
+<div>
+    {% if object_list %}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered mg-b-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Subject / Type</th>
+                    <th>Class Group</th>
+                    <th>Duration</th>
+                    <th>Author</th>
+                    <th>No. of Questions</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in object_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'exam-detail' item.id %}">{{item.title}}</a>
+                        </td>
+                        <td>{{item.subject}}/{{item.term}}/{{item.get_exam_type_display}} </td>
+                        <td>{{item.class_group}} </td>
+                        <td>{{item.get_duration}} </td>
+                        <td>{{item.author}}</td>
+                        <td>{{item.question_count}} </td>
+                        <td>
+                            {% if item.published %}
+                                Published
+                            {% else %}
+                                Not Published
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No Exam to show.</p>
+    {% endif %}
+</div>
+
+
+{% endblock content %}

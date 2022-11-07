@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <div>
+    <h2 class=""> DASHBOARD </h2>
+  </div>
+  {% if exams %}
+    <table class="table table-hover table-bordered mt-4 ">
+        <thead class="table-light">
+            <tr>
+              <th>Title</th>
+              <th>Duration</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for exam in exams %}
+                <tr>
+                  <td>
+                    <a href="{{ exam.get_absolute_url }}">{{exam.title}} </a>
+                  </td>
+                  <td>{{exam.get_duration}}</td>
+                  <td>{{exam.student_score}}</td>
+                </tr>
+              {% endfor %}
+
+    </table>
+
+    {% else %}
+    <P> There is not exam for you currently</P>
+  {% endif %}
+{%endblock%}

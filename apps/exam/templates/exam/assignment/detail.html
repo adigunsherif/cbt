@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content-header %}
+{% endblock content-header %}
+
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-12 card card-body">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td><h4>Title</h4></td>
+                    <td>
+                        <h4>{{object.title}}</h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Subject</td>
+                    <td>{{object.subject}} </td>
+                </tr>
+                <tr>
+                    <td>Audience</td>
+                    <td> {{ object.audience.all | join:", " }}</td>
+
+                </tr>
+                <tr>
+                    <td>Max Score</td>
+                    <td>{{object.maximum_score}} </td>
+                </tr>
+                <tr>
+                    <td>Author</td>
+                    <td>{{object.author}}</td>
+                </tr>
+                <tr>
+                    <td>Body</td>
+                    <td>{{object.body | safe }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" id="modal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+
+  {% endblock %}

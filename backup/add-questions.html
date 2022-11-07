@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content-header %}
+<div class="az-content-header d-block d-md-flex">
+    <div>
+        <h2 class="az-content-title mg-b-5 mg-b-lg-8">
+            Add questions to {{exam}}
+        </h2>
+    </div>
+</div>
+{% endblock content-header %}
+
+
+
+{% block content %}
+
+<div>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form.management_form }}
+        {{ form.non_form_errors }}
+
+        {% if form.errors %}
+            {{form.errors}}
+        {% endif %}
+
+
+
+        {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field.errors }}
+            {{ hidden_field }}
+        {% endfor %}
+
+        <div class="row">
+
+            {% for questions in form.forms %}
+                <div class="col-sm-6 card card-body">
+
+                    <div class="bg-light p-2">
+                        {% for hidden_field in questions.hidden_fields %}
+                            {{ hidden_field.errors }}
+                        {% endfor %}
+
+
+                        {% for form in questions %}
+                        {{form}}
+                        {% endfor %}
+                    </div>
+
+
+                    {% if questions.nested %}
+                        {{ questions.nested.management_form }}
+                        {{ questions.nested.non_form_errors }}
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Choices</th>
+                                    <th>Correct</th>
+                                    <th><i class="fa fa-trash text-danger"></i> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for choices in questions.nested.forms %}
+                                    {% for hidden in choices.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                    <tr>
+                                        {% for choice in choices.visible_fields %}
+                                            <td>{{choice}}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+
+
+                    {% endif %}
+
+
+
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+{% endblock content %}

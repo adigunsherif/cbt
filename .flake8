@@ -1,0 +1,4 @@
+[flake8]
+ignore=E203, E501, W503, W504
+max-line-length=120
+exclude = **/migrations/*, pip/*, lambdas/*, src/project/settings/*, src/dewaele_import/*, src/importer/maximmo.py

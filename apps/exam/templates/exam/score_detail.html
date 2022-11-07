@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h2 class="az-content-title mg-b-5 mg-b-lg-8">
+    Exam Score for {{exam}}
+</h2>
+
+
+{% if exam.show_result %}
+    <h4>Total Score: {{answer.score}} / {{answer.total_questions}} ({{answer.percent}}%)</h4>
+    <p>
+        Start Date: {{answer.time_started}}<br>
+        End Date: {{answer.time_completed}}  <br>
+    </p>
+
+{% else %}
+
+    <p>Your exam has been submmitted successfully. Your result shall be communicated to you in due time.</p>
+
+{% endif %}
+
+
+{% if exam.show_feedback %}
+
+    {% for question in exam.questions.all %}
+        <div class="card card-body">
+            {{question.question | safe}}
+
+            <div class="mt-2">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Options</th>
+                           <!--  <th>Correct</th> -->
+                            <th>Candidate Choice</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for choice in question.choice_set.all %}
+                            <tr>
+                                <td>{{choice.body | safe}}</td>
+                                <!-- <td>
+
+                                    {% if choice.is_correct %}
+                                        <i class="fa fa-check text-success"></i>
+                                    {% else %}
+                                        <i class="fa fa-times text-danger"></i>
+                                    {% endif %}
+                                </td> -->
+                                <td>
+                                    {% if choice.id == question.mychoice %}
+                                        {% if choice.is_correct %}
+                                            <i class="fa fa-check text-success"></i>
+                                        {% else %}
+                                            <i class="fa fa-times text-danger"></i>
+                                        {% endif %}
+
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endif %}
+
+
+
+{% endblock content %}

@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+
+{% block content %}
+
+<div class="d-flex justify-content-between">
+    <h5 >  {{exam}} </h5>
+    <h3 id="timer" class="az-dashboard-header-right"></h3>
+</div>
+
+
+<div class="examContainer">
+    <form method="POST" id="exam">
+        {% csrf_token %}
+
+        {% for question in exam.questions.all %}
+            <div class="list-group eachExam">
+                <div class="list-group-item bg-light py-4">
+                     {{question.question | safe }}
+                </div>
+
+                {% for choice in question.choice_set.all %}
+                    <label class="list-group-item list-group-item-action q_{{question.id}} {{question.id}}_{{choice.id}}" for="{{question.id}}_{{choice.id}}">
+                        <input type="radio" id="{{question.id}}_{{choice.id}}" name="{{question.id}}" value="{{choice.id}}">
+                        {{choice.body | safe}}
+                    </label>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="m-2">
+            <a class="btn btn-info prev">&#10094; Previous</a>
+            <a class="btn btn-primary next">Next &#10095;</a>
+        </div>
+
+        <input type="submit" class="btn btn-success submit-btn m-3" value="Submit"></input>
+
+    </form>
+</div>
+
+<div class="text-center section">
+    {% for question in exam.questions.all %}
+    <span class="dot" data-id="{{forloop.counter}}"  id="dot_{{question.id}}">{{forloop.counter}}</span>
+    {% endfor %}
+  </div>
+{% endblock content %}
+
+
+
+{% block scripts %}
+
+    {% if score.is_complete == False %}
+        <script src="{% static 'vendors/jquery.countdown/jquery.countdown.min.js' %}"></script>
+
+        <script>
+            $('#timer').countdown("{{expiry_time|date:'Y/m/d H:i:s'}}", function(event) {
+                if(event.type == 'stoped') {
+                    document.getElementById("timer").innerHTML = "TIME EXHAUSTED";
+                    $('#exam').submit()
+                } else {
+                    $(this).html(event.strftime('%Hh %Mm %Ss'));
+                }
+
+            }).on("finish.countdown", function(event){
+                document.getElementById("timer").innerHTML = "TIME EXHAUSTED";
+                $('#exam').submit()
+            });
+        </script>
+
+        <script>
+            /* timer */
+            /* let countDownDate = new Date("{{time|date:'Y/m/d H:i:s'}}").getTime()
+            var x = setInterval(function () {
+
+                // Get today's date and time
+                var now = new Date().getTime();
+
+                // Find the distance between now and the count down date
+                var distance = countDownDate - now;
+
+                // Time calculations for days, hours, minutes and seconds
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Display the result in the element with id="demo"
+                document.getElementById("timer").innerHTML = hours + "h "
+                + minutes + "m " + seconds + "s ";
+
+                // If the count down is finished, write some text
+                if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("timer").innerHTML = "TIME EXHAUSTED";
+                $('#exam').submit()
+                }
+            }, 1000);
+            */
+
+            /* slideshow */
+
+            var slideIndex = 1;
+
+            showSlides(slideIndex);
+
+            function plusSlides(n) {
+                showSlides(slideIndex += n);
+            }
+
+            function currentSlide(n) {
+                showSlides(slideIndex = n);
+            }
+
+            $('.examContainer .prev').on('click', function () {
+                plusSlides(-1);
+            })
+
+            $('.examContainer .next').on('click', function () {
+                plusSlides(1);
+            })
+            $('.dot').on('click', function () {
+                currentSlide($(this).data('id'));
+            })
+
+            function showSlides(n) {
+                var i;
+                var slides = document.getElementsByClassName("eachExam");
+                var dots = document.getElementsByClassName("dot");
+                if (n > slides.length) { slideIndex = 1 }
+                if (n < 1) { slideIndex = slides.length }
+                for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+                }
+                for (i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+                }
+                slides[slideIndex - 1].style.display = "block";
+                dots[slideIndex - 1].className += " active";
+            }
+
+            $('.submit-btn').on('click', function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    html: "Are you sure you want to submit now? This action cannot be undone",
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, submit',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('form').submit()
+                    }
+                })
+            })
+
+            $(".dot").each(function (i, obj) {
+                let q = $(this).data("id")
+                let label = `q_${q}`
+                let saved_data = sessionStorage.getItem(label);
+                if (saved_data) {
+                    saved = saved_data.split("_")
+                    colorDot(saved[0])
+                    $("#" + saved_data).prop('checked', true);
+                    $("." + saved_data).addClass('active');
+                }
+            })
+
+            $("input[type=radio]").on("click", function () {
+                let id = $(this).attr("name")
+                let label = `q_${id}`, value = $(this).val();
+                sessionStorage.setItem(label, id + "_" + value);
+                colorDot(id)
+                $(".q_" + id).removeClass("active")
+                $("." + id + "_" + value).addClass("active")
+            })
+
+            function colorDot(id) {
+                $("#dot_" + id).addClass("selected")
+            }
+        </script>
+
+        <script> let qs = []; </script>
+
+        {% for question in exam.questions.all %}
+            <script>qs.push("q_{{ question.id }}")</script>
+        {% endfor %}
+
+        <script>
+            $("form").on("submit", function (e) {
+                qs.forEach(function (v) {
+                    sessionStorage.removeItem(v)
+                })
+            })
+        </script>
+
+    {% endif %}
+
+
+{% endblock scripts %}

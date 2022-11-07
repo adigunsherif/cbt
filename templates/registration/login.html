@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{%block body-class%}bg-dark {%endblock%}
+
+{% block header %}  {% endblock %}
+
+{% block content %}
+  <div class="row text-black">
+      <div class="card col-md-6 offset-md-3 text-center mt-4 my-auto p-4">
+        <h1 class="card-title">{{sitename}}</h1>
+        <form method="POST" class="mt-4 mb-3" action="">
+
+          <div class="my-2">
+            {{form.errors}}
+        </div>
+
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="username" class="form-control" id="username" name="username">
+          </div>
+          <div class="mb-">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password">
+          </div>
+          <button type="submit" class="mt-2 btn btn-danger">Submit</button>
+        </form>
+      </div>
+  </div>
+{% endblock content %}

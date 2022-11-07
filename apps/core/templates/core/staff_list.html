@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row my-2">
+  <div class="col">
+    <h3 class=""> Staffs </h3>
+    <span class="clickable-link" hx-get="{% url 'staff_create' %}"
+      hx-target="#dialog" role="button">Click here to add a staff</span>
+
+
+    {% if object_list %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Username</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% for item in object_list %}
+        <tr>
+          <td></td>
+          <td> {{item.get_full_name}} </td>
+          <td> {{item.username}} </td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+
+    {% else %}
+    <p>There are currently no staff registered yet. <span class="clickable-link" hx-get="{% url 'staff_create' %}" hx-target="#dialog"  role="button">Click here to add a staff</span></p>
+
+    {% endif %}
+  </div>
+</div>
+
+
+
+
+
+{%endblock%}

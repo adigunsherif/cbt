@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h2 class="az-content-title mg-b-5 mg-b-lg-8">
+    My Exams
+</h2>
+
+<div>
+    {% if exams %}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered mg-b-0">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Class Group</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in exams %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'exam-detail' item.id %}">{{item.title}}</a>
+                        </td>
+                        <td>{{item.class_group}} </td>
+                        <td>{{item.duration}} </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No Exam to show.</p>
+    {% endif %}
+</div>
+
+
+{% endblock content %}
