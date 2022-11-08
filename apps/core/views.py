@@ -24,11 +24,15 @@ from .models import StudentClass, Subject, User
 
 
 class OnlyAdminMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Helper mixin to restrict view access to admin only"""
+
     def test_func(self):
         return self.request.user.is_superuser
 
 
 class StaffAndAdminMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Helper mixin to restrict view access to admin and staff only"""
+
     def test_func(self):
         return self.request.user.is_staff
 
@@ -68,6 +72,8 @@ class DashboardView(LoginRequiredMixin, View):
 
 
 class StudentListView(OnlyAdminMixin, ListView):
+    """Student Listview"""
+
     queryset = User.objects.filter(is_staff=False)
     template_name = "core/student_list.html"
 

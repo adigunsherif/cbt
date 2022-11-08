@@ -15,7 +15,7 @@ from . import forms
 from .models import Answer, Choice, Exam, Question
 
 
-class QuestionBankView(StaffAndAdminMixin, ListView):
+class QuestionBankListView(StaffAndAdminMixin, ListView):
     queryset = Question.objects.select_related("subject")
     template_name = "exam/questionbank.html"
     paginate_by = 50
@@ -171,6 +171,8 @@ class AddQuestionView(StaffAndAdminMixin, View):
 
 
 class AddQuestionFromBankView(StaffAndAdminMixin, View):
+    """Page responsible for picking question from question bank to an exam."""
+
     template_name = "exam/add_question_from_bank.html"
 
     def get(self, request, **kwargs):

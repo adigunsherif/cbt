@@ -12,6 +12,8 @@ class Gender:
 
 
 class User(AbstractUser):
+    """Extends the user's table"""
+
     gender = models.CharField(choices=Gender.GENDER_CHOICES, max_length=10)
     is_active = models.BooleanField(default=True)
     student_class = models.ForeignKey(
@@ -30,6 +32,8 @@ class Subject(models.Model):
 
 
 class StudentClass(models.Model):
+    """Student class category table"""
+
     name = models.CharField(max_length=200, unique=True)
 
     class Meta:
