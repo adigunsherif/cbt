@@ -24,7 +24,7 @@
                 {% for item in scores %}
                     <tr>
                         <td>
-                            <a href="{% url 'exam-detail' item.id %}">{{item.user}}</a>
+                            <a href="{% url 'score-detail' item.exam.id item.user.id %}">{{item.user}}</a>
                         </td>
                         <td>{{item.score}} / {{item.total_questions}} </td>
                         <td>{{item.time_started}} </td>
