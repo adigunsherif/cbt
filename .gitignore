@@ -43,6 +43,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 logs/debug.*
+staticfiles/
 
 
 # PyInstaller

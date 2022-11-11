@@ -1,26 +1,26 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.core.models import User
+from apps.core.models import User, Gender
 
 
 class DashboardViewTest(TestCase):
-    def test_dashboard_template_admin(self):
+    def test_admin_dashboard(self):
         admin = User.objects.get(pk=1)
         self.client.force_login(admin)
         response = self.client.get(reverse("dashboard"))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
-    def test_dashboard_template_student(self):
+    def test_student_dashboard(self):
         student = User.objects.create_user(
-            username="student", password="pass", fullname="adrew"
+            username="john", password="doe", gender=Gender.MALE
         )
         self.client.force_login(student)
         response = self.client.get(reverse("dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "dashboard.html")
 
-    def test_dashboard_template_anonymous(self):
+    def test_unauthenticated_user(self):
         response = self.client.get(reverse("dashboard"))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/login/?next=/")
+        self.assertEqual(response.url, "/accounts/login/?next=/")
