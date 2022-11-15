@@ -16,7 +16,7 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="checkall"> </th>
-            <th>Subject </th>
+            <th>Class </th>
             <th>Question</th>
           </tr>
         </thead>
@@ -24,7 +24,7 @@
           {% for item in questions %}
           <tr>
             <td> <input type="checkbox" name="question[]" value="{{item.id}}"> </td>
-            <td>{{item.subject}} </td>
+            <td>{{item.class_group}} </td>
             <td>{{item.question|safe}} </td>
           </tr>
           {% endfor %}

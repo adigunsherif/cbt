@@ -1,3 +1,5 @@
+from django_filters.views import FilterView
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -12,12 +14,14 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from apps.core.views import StaffAndAdminMixin
 
 from . import forms
+from .filters import QuestionFilter
 from .models import Answer, Choice, Exam, Question
 
 
-class QuestionBankListView(StaffAndAdminMixin, ListView):
+class QuestionBankListView(StaffAndAdminMixin, FilterView):
     queryset = Question.objects.select_related("subject")
     template_name = "exam/questionbank.html"
+    filterset_class = QuestionFilter
     paginate_by = 50
 
 
@@ -202,6 +206,7 @@ class QuestionUpdateView(StaffAndAdminMixin, View):
 
     def get(self, request, *args, **kwargs):
         context = {
+            "title": "Update Question",
             "form": self.form_class(instance=self.get_question()),
             "formset": self.formset_class(
                 instance=self.get_question(),

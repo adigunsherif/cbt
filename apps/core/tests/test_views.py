@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.core.models import User, Gender
+from apps.core.models import Gender, User
 
 
 class DashboardViewTest(TestCase):

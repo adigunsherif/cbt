@@ -1,0 +1,21 @@
+<div class="my-1 bg-light p-2">
+
+<form action="">
+  <div class="row g-1">
+      {% for field in filter.form %}
+          <div class="mb-1 col-sm-6 col-sm-3 col-md-2">
+              {{field.label_tag}}
+              {{field}}
+              {% if field.help_text %}
+              <small class="help">{{ field.help_text|safe }}</small>
+              {% endif %}
+              <small class="text-danger">{{ field.errors }}</small>
+          </div>
+      {% endfor %}
+      <div class="col-sm-2 mt-4">
+        <button type="submit" class="btn btn-success ">Search</button>
+      </div>
+  </div>
+</form>
+
+</div>

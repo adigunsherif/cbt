@@ -3,87 +3,88 @@
 
 
 {% block content %}
+<div class="card card-body">
+    <div class="row ">
+        <div class="col-6 col-sm-4">
+            <h4>{{object.title}}</h4>
+        </div>
+        <div class="col-6 col-sm-2">
+            <p>Subject <br> {{object.subject}} </p>
+        </div>
+        <div class="col-6 col-sm-2">
+            <p>Class <br> {{object.class_group}} </p>
+        </div>
+        <div class="col-6 col-sm-2">
+            <p>Duration <br> {{object.get_duration}} </p>
+        </div>
+        <div class="col-6 col-sm-2">
+            <p>Author <br> {{object.author}} </p>
+        </div>
+        <div class="col-6 col-sm-4">
+            <p>Description <br> {{object.description | safe}} </p>
+        </div>
+        <div class="col-6 col-sm-2">
+            <p>Category <br> {{object.get_exam_type_display}} </p>
+        </div>
+        <div class="col-6 col-sm-2">
+            <p>No of Questions <br> {{object.question_count}} </p>
+        </div>
 
-<div class="row">
-    <div class="col-sm-6 card card-body">
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <td><h4>Title</h4></td>
-                    <td>
-                        <h4>{{object.title}}</h4>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Subject</td>
-                    <td>{{object.subject}} </td>
-                </tr>
-                <tr>
-                    <td>Class</td>
-                    <td>{{object.class_group}} </td>
-                </tr>
-                <tr>
-                    <td>Duration</td>
-                    <td>{{object.get_duration}} </td>
-                </tr>
-                <tr>
-                    <td>Author</td>
-                    <td>{{object.author}}</td>
-                </tr>
-                <tr>
-                    <td>Description</td>
-                    <td>{{object.description | safe}}</td>
-                </tr>
-                <tr>
-                    <td>Category</td>
-                    <td>{{object.get_exam_type_display}}</td>
-                </tr>
-                <tr>
-                    <td>No of Questions</td>
-                    <td>{{object.question_count}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <div>
+        <div class="col-12">
             {% if request.user.is_staff %}
-                <a class="btn btn-success" href="{% url 'exam-update' object.id %}"><i class="typcn typcn-edit"></i> Update</a>
-                <a href="{% url 'exam-delete' object.id %}" class="btn btn-danger"><i class="typcn typcn-trash"></i> Delete</a>
-                <a href="{% url 'scores' object.id %}" class="btn btn-primary"><i class="typcn typcn-star"></i> Scores</a>
+            <a class="btn btn-success" href="{% url 'exam-update' object.id %}"><i
+                    class="typcn typcn-edit"></i> Update</a>
+            <a href="{% url 'exam-delete' object.id %}" class="btn btn-danger"><i
+                    class="typcn typcn-trash"></i> Delete</a>
+            <a href="{% url 'scores' object.id %}" class="btn btn-primary"><i
+                    class="typcn typcn-star"></i> Scores</a>
             {% endif %}
 
-            <a href="{% url 'take' object.id %}" class="btn btn-primary"><i class="typcn typcn-eye"></i> Take Exam</a>
+            <a href="{% url 'take' object.id %}" class="btn btn-primary"><i
+                    class="typcn typcn-eye"></i> Take Exam</a>
+        </div>
+
+    </div>
+</div>
+
+
+
+{% if request.user.is_staff %}
+    <div class="row">
+    <div class="col-sm-12">
+        <h4>Questions</h4>
+        <a href="{% url 'add-question' exam.id %}"><i class="fa fa-plus"></i> Add
+            new question</a> |
+        <a href="{% url 'add-question-from-bank' exam.id %}"><i
+                class="fa fa-circle-plus"></i> Add question from question bank</a>
+
+        <div>
+            {% if exam.questions.all %}
+            <table class="table table-bordered">
+                <tbody>
+                    {% for question in exam.questions.all %}
+                    <tr>
+                        <td>{{question.question | safe }} </td>
+                        <td>
+                            <a
+                                href="{% url 'examquestion-update' question.id exam.id %}"><i
+                                    class="fa fa-edit"></i></a>
+                            <a
+                                href="{% url 'remove-question' question.id exam.id %}"><i
+                                    class="fa fa-trash text-danger"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>There are no question for this exam yet.</p>
+            {% endif %}
         </div>
     </div>
+    </div>
+{% endif %}
 
-    {% if request.user.is_staff %}
-        <div class="col-sm-6">
-            <p>Questions</p>
-            <a href="{% url 'add-question' exam.id %}" ><i class="fa fa-plus"></i> Add new question</a> |
-            <a href="{% url 'add-question-from-bank' exam.id %}" ><i class="fa fa-circle-plus"></i> Add question from question bank</a>
-
-            <div>
-                {% if exam.questions.all %}
-                <table class="table table-bordered">
-                    <tbody>
-                        {% for question in exam.questions.all %}
-                            <tr>
-                                <td>Question {{forloop.counter}} </td>
-                                <td>
-                                    <a href="{% url 'examquestion-update' question.id exam.id %}"><i class="fa fa-edit"></i></a>
-                                    <a href="{% url 'remove-question' question.id exam.id %}"><i class="fa fa-trash text-danger"></i></a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                    <p>There are no question for this exam yet.</p>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
-
-</div>
 
 
 {% endblock content %}

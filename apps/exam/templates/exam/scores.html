@@ -13,6 +13,7 @@
             <table class="table table-hover table-bordered mg-b-0">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Student</th>
                     <th>Score</th>
                     <th>Started on</th>
@@ -23,6 +24,7 @@
             <tbody>
                 {% for item in scores %}
                     <tr>
+                        <td>{{forloop.counter}} </td>
                         <td>
                             <a href="{% url 'score-detail' item.exam.id item.user.id %}">{{item.user}}</a>
                         </td>
