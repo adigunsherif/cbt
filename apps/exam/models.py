@@ -14,6 +14,7 @@ from apps.core.models import (
 
 class Question(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    class_group = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
     question = models.TextField()
 
     class Meta:
