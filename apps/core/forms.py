@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.contrib.auth.forms import UserCreationForm
 from django.forms.widgets import CheckboxInput, Textarea
 
 from .models import AcademicSession, AcademicTerm, StudentClass, Subject, User

@@ -24,6 +24,12 @@ class QuestionBankListView(StaffAndAdminMixin, FilterView):
     filterset_class = QuestionFilter
     paginate_by = 50
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_staff:
+            return queryset.filter(author=self.request.user)
+        return queryset
+
 
 class QuestionCreateView(StaffAndAdminMixin, View):
     template_name = "exam/question_form.html"

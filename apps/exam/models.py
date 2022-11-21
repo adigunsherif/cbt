@@ -9,6 +9,7 @@ from apps.core.models import (
     AcademicTerm,
     StudentClass,
     Subject,
+    User,
 )
 
 
@@ -16,6 +17,7 @@ class Question(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     class_group = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
     question = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         ordering = ["id"]
