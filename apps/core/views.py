@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -12,6 +12,7 @@ from apps.core.forms import (
     AcademicSessionForm,
     AcademicTermForm,
     StaffCreateForm,
+    StaffUpdateForm,
     StudentClassForm,
     SubjectForm,
     UserCreateForm,
@@ -132,8 +133,41 @@ class StaffCreateView(OnlyAdminMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
+        self.object = form.save()
+        return JsonResponse({"success": True}, status=200)
+
+    def form_invalid(self, form):
+        errors = {}
+        for field, error_list in form.errors.items():
+            errors[field] = error_list[0]
+        return JsonResponse({
+            "success": False, 
+            "errors": errors
+        }, status=400)
+
+class StaffUpdateView(OnlyAdminMixin, SuccessMessageMixin, UpdateView):
+    model = User
+    form_class = StaffUpdateForm
+    template_name = "modal_create.html"
+    success_message = "User successfully updated."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Update staff"
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return JsonResponse({"success": True}, status=200)
+
+    def form_invalid(self, form):
+        errors = {}
+        for field, error_list in form.errors.items():
+            errors[field] = error_list[0]
+        return JsonResponse({
+            "success": False, 
+            "errors": errors
+        }, status=400)
 
 
 class TermSessionView(OnlyAdminMixin, View):

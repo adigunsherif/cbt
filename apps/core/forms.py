@@ -71,6 +71,30 @@ class StaffCreateForm(UserCreationForm, ResponsiveForm):
         instance.is_staff = True
         instance.save()
         return instance
+    
+
+class StaffUpdateForm(forms.ModelForm, ResponsiveForm):
+    password = forms.CharField(required=False)
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "gender",
+            "password",
+        ]
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        password = self.cleaned_data.get("password")
+        if password:
+            instance.set_password(password)
+        if commit:
+            instance.save()
+        return instance
+
 
 
 class AcademicSessionForm(forms.ModelForm, ResponsiveForm):
