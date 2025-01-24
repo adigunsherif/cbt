@@ -353,3 +353,19 @@ class ClassUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def form_valid(self, form):
         form.save()
         return HttpResponse(status=204)
+
+# ERRORS
+def error_404(request, exception):
+    return render(request, 'error/404.html', status=404)
+
+def error_500(request):
+    return render(request, 'error/500.html', status=500)
+
+def error_503(request):
+    return render(request, 'error/503.html', status=503)
+
+def error_401(request, exception=None):
+    return render(request, 'error/401.html', status=401)
+
+def error_403(request, exception=None):
+    return render(request, 'error/403.html', status=403)
