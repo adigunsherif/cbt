@@ -1,90 +1,130 @@
 {% extends 'base.html' %}
 
-
-
 {% block content %}
-<div class="card card-body">
-    <div class="row ">
-        <div class="col-6 col-sm-4">
-            <h4>{{object.title}}</h4>
-        </div>
-        <div class="col-6 col-sm-2">
-            <p>Subject <br> {{object.subject}} </p>
-        </div>
-        <div class="col-6 col-sm-2">
-            <p>Class <br> {{object.class_group}} </p>
-        </div>
-        <div class="col-6 col-sm-2">
-            <p>Duration <br> {{object.get_duration}} </p>
-        </div>
-        <div class="col-6 col-sm-2">
-            <p>Author <br> {{object.author}} </p>
-        </div>
-        <div class="col-6 col-sm-4">
-            <p>Description <br> {{object.description | safe}} </p>
-        </div>
-        <div class="col-6 col-sm-2">
-            <p>Category <br> {{object.get_exam_type_display}} </p>
-        </div>
-        <div class="col-6 col-sm-2">
-            <p>No of Questions <br> {{object.question_count}} </p>
-        </div>
-
-        <div class="col-12">
+<div class="container-fluid px-4">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="h4 mb-0">{{object.title}}</h2>
             {% if request.user.is_staff %}
-            <a class="btn btn-success" href="{% url 'exam-update' object.id %}"><i
-                    class="typcn typcn-edit"></i> Update</a>
-            <a href="{% url 'exam-delete' object.id %}" class="btn btn-danger"><i
-                    class="typcn typcn-trash"></i> Delete</a>
-            <a href="{% url 'scores' object.id %}" class="btn btn-primary"><i
-                    class="typcn typcn-star"></i> Scores</a>
+            <div class="btn-group">
+                <a href="{% url 'exam-update' object.id %}" class="btn btn-light">
+                    <i class="fa fa-edit me-2"></i>Update
+                </a>
+                <a href="{% url 'exam-delete' object.id %}" class="btn btn-light text-danger">
+                    <i class="fa fa-trash me-2"></i>Delete
+                </a>
+            </div>
             {% endif %}
-
-            <a href="{% url 'take' object.id %}" class="btn btn-primary"><i
-                    class="typcn typcn-eye"></i> Take Exam</a>
         </div>
+        
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Subject</h6>
+                        <p class="h5">{{object.subject}}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Class</h6>
+                        <p class="h5">{{object.class_group}}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Duration</h6>
+                        <p class="h5">{{object.get_duration}}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Author</h6>
+                        <p class="h5">{{object.author}}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Category</h6>
+                        <p class="h5">{{object.get_exam_type_display}}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Questions</h6>
+                        <p class="h5">{{object.question_count}}</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Description</h6>
+                        <p>{{object.description | safe}}</p>
+                    </div>
+                </div>
+            </div>
 
+            <div class="mt-4 text-center">
+                {% if request.user.is_staff %}
+                <a href="{% url 'scores' object.id %}" class="btn btn-primary me-2">
+                    <i class="fa fa-chart-bar me-2"></i>Scores
+                </a>
+                {% endif %}
+                <a href="{% url 'take' object.id %}" class="btn btn-success">
+                    <i class="fa fa-play me-2"></i>Take Exam
+                </a>
+            </div>
+        </div>
     </div>
-</div>
 
-
-
-{% if request.user.is_staff %}
-    <div class="row">
-    <div class="col-sm-12">
-        <h4>Questions</h4>
-        <a href="{% url 'add-question' exam.id %}"><i class="fa fa-plus"></i> Add
-            new question</a> |
-        <a href="{% url 'add-question-from-bank' exam.id %}"><i
-                class="fa fa-circle-plus"></i> Add question from question bank</a>
-
-        <div>
+    {% if request.user.is_staff %}
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Exam Questions</h4>
+            <div>
+                <a href="{% url 'add-question' exam.id %}" class="btn btn-sm btn-primary me-2">
+                    <i class="fa fa-plus me-2"></i>Add Question
+                </a>
+                <a href="{% url 'add-question-from-bank' exam.id %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fa fa-copy me-2"></i>From Question Bank
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body p-0">
             {% if exam.questions.all %}
-            <table class="table table-bordered">
-                <tbody>
-                    {% for question in exam.questions.all %}
-                    <tr>
-                        <td>{{question.question | safe }} </td>
-                        <td>
-                            <a
-                                href="{% url 'examquestion-update' question.id exam.id %}"><i
-                                    class="fa fa-edit"></i></a>
-                            <a
-                                href="{% url 'remove-question' question.id exam.id %}"><i
-                                    class="fa fa-trash text-danger"></i></a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <tbody>
+                        {% for question in exam.questions.all %}
+                        <tr>
+                            <td>
+                                <div class="text-truncate" style="max-width: 600px;">
+                                    {{question.question | safe}}
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'examquestion-update' question.id exam.id %}" class="btn btn-outline-primary">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'remove-question' question.id exam.id %}" class="btn btn-outline-danger">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
-            <p>There are no question for this exam yet.</p>
+            <div class="text-center py-4 text-muted">
+                <i class="fa fa-file-alt fa-3x mb-3"></i>
+                <p class="mb-3">No questions added to this exam yet</p>
+            </div>
             {% endif %}
         </div>
     </div>
-    </div>
-{% endif %}
-
-
-
+    {% endif %}
+</div>
 {% endblock content %}
