@@ -1,29 +1,67 @@
-<form hx-post="{{ request.path }}" class="modal-content my-2">
+<form  hx-post="{{ request.path }}"  hx-trigger="submit"  hx-swap="none" class="modal-content my-2">
     {% csrf_token %}
     <div class="modal-header">
-        <h5 class="modal-title">{{title}}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"
-            aria-label="Close"></button>
+        <h5 class="modal-title">{{ title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body row">
         <div class="col-12">
-            {{ form.non_form_errors }}
+            <div id="form-errors" class="alert alert-danger" style="display: none;"></div>
 
             {% for field in form %}
             <div class="mb-2">
-                {{field.label_tag}}
-                {{field}}
-                <small class="text-danger">{{ field.errors}}</small>
+                {{ field.label_tag }}
+                {{ field }}
+                <small class="text-danger field-error" id="error-{{ field.name }}"></small>
                 {% if field.help_text %}
-                <small class="help">{{ field.help_text|safe}}</small>
+                <small class="help">{{ field.help_text|safe }}</small>
                 {% endif %}
             </div>
             {% endfor %}
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </form>
 
+<script>
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        const xhr = event.detail.xhr;
+        
+        // Reset previous errors
+        document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+        const formErrorsContainer = document.getElementById('form-errors');
+        formErrorsContainer.style.display = 'none';
+        formErrorsContainer.textContent = '';
+
+        try {
+            const responseJSON = JSON.parse(xhr.response);
+            
+            if (responseJSON.success) {
+                // Close the modal
+                const modal = document.querySelector('#dialog');
+                const bootstrapModal = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+                bootstrapModal.hide();
+
+                // Refresh the page or part of the page
+                htmx.ajax('GET', window.location.href, '#staff-list');
+            } else {
+                // Display errors
+                if (responseJSON.errors) {
+                    Object.keys(responseJSON.errors).forEach(field => {
+                        const errorEl = document.getElementById(`error-${field}`);
+                        if (errorEl) {
+                            errorEl.textContent = responseJSON.errors[field];
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error processing response:', error);
+            formErrorsContainer.textContent = 'An unexpected error occurred.';
+            formErrorsContainer.style.display = 'block';
+        }
+    });
+</script>

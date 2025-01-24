@@ -1,61 +1,82 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-fluid px-4">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2 class="fw-bold text-primary mb-0">Exam Management</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a href="{% url 'exam-create' %}" class="btn btn-success rounded-pill shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i>Add New Exam
+            </a>
+        </div>
+    </div>
 
-<div class="row my-2">
-    <div class="col">
-        <h3 class=""> Most Recent Exams </h3>
-        <a href="{% url 'exam-create' %}">Add new exam</a>
-
-
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-light py-3">
+            <h5 class="card-title mb-0">Most Recent Exams</h5>
+        </div>
+        
         {% if exams %}
         <div class="table-responsive">
-            <table class="table table-hover table-bordered mg-b-0">
-                <thead>
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
                     <tr>
-                        <th>Title</th>
-                        <th>Subject / Type</th>
-                        <th>Class Group</th>
-                        <th>Duration</th>
-                        <th>Author</th>
-                        <th>No. of Questions</th>
-                        <th>Status</th>
+                        <th class="text-muted fw-normal">Title</th>
+                        <th class="text-muted fw-normal">Subject / Type</th>
+                        <th class="text-muted fw-normal">Class Group</th>
+                        <th class="text-muted fw-normal">Duration</th>
+                        <th class="text-muted fw-normal">Author</th>
+                        <th class="text-muted fw-normal">Questions</th>
+                        <th class="text-muted fw-normal">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in exams %}
                     <tr>
                         <td>
-                            <a href="{% url 'exam-detail' item.id %}">{{item.title}}</a>
+                            <a href="{% url 'exam-detail' item.id %}" class="text-decoration-none text-primary fw-semibold">
+                                {{item.title}}
+                            </a>
                         </td>
-                        <td>{{item.subject}}/{{item.term}}/{{item.get_exam_type_display}}
-                        </td>
-                        <td>{{item.class_group}} </td>
-                        <td>{{item.get_duration}} </td>
+                        <td class="text-muted">{{item.subject}}/{{item.term}}/{{item.get_exam_type_display}}</td>
+                        <td>{{item.class_group}}</td>
+                        <td>{{item.get_duration}}</td>
                         <td>{{item.author}}</td>
-                        <td>{{item.question_count}} </td>
+                        <td class="text-center">{{item.question_count}}</td>
                         <td>
                             {% if item.published %}
-                            Published
+                            <span class="badge bg-success rounded-pill">Published</span>
                             {% else %}
-                            Not Published
+                            <span class="badge bg-warning rounded-pill text-dark">Draft</span>
                             {% endif %}
                         </td>
-
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-info-circle me-2"></i>No exams to display
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        {% if exams.paginator.num_pages > 1 %}
+        <div class="card-footer bg-light py-3">
             {% include 'pagination.html' with page_obj=exams %}
         </div>
+        {% endif %}
+
         {% else %}
-        <p>No Exam to show.</p>
+        <div class="card-body text-center py-5">
+            <i class="bi bi-journal-x text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-3">No exams have been created yet.</p>
+            <a href="{% url 'exam-create' %}" class="btn btn-primary mt-2">Create First Exam</a>
+        </div>
         {% endif %}
     </div>
 </div>
-
-
-
-
-
-{%endblock%}
+{% endblock %}

@@ -1,45 +1,94 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<div class="row my-2">
-  <div class="col">
-    <h3 class=""> Staffs </h3>
-    <span class="clickable-link" hx-get="{% url 'staff_create' %}"
-      hx-target="#dialog" role="button">Click here to add a staff</span>
-
-
-    {% if object_list %}
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Username</th>
-        </tr>
-      </thead>
-      <tbody>
-
-        {% for item in object_list %}
-        <tr>
-          <td></td>
-          <td> {{item.get_full_name}} </td>
-          <td> {{item.username}} </td>
-        </tr>
-        {% endfor %}
-
-      </tbody>
-    </table>
-
-    {% else %}
-    <p>There are currently no staff registered yet. <span class="clickable-link" hx-get="{% url 'staff_create' %}" hx-target="#dialog"  role="button">Click here to add a staff</span></p>
-
-    {% endif %}
-  </div>
+<div id="staff-list" class="container-fluid px-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Staff Management</h3>
+            <button 
+                class="btn btn-light rounded-pill" 
+                hx-get="{% url 'staff_create' %}" 
+                hx-target="#dialog .modal-content" 
+                hx-trigger="click"
+                data-bs-toggle="modal" 
+                data-bs-target="#dialog"
+            >
+                <i class="fa fa-plus me-2"></i>Add Staff
+            </button>
+        </div>
+        
+        <div class="card-body p-0">
+            {% if object_list %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 50px;">#</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in object_list %}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td>{{ item.get_full_name }}</td>
+                            <td>{{ item.username }}</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <span 
+                                        class="btn btn-outline-primary" 
+                                        hx-get="{% url 'staff-update' item.id %}" 
+                                        hx-target="#dialog .modal-content" 
+                                        hx-trigger="click"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#dialog"
+                                    >
+                                        <i class="fa fa-edit"></i>
+                                    </span>
+                                    <span 
+                                        class="btn btn-outline-danger" 
+                                        hx-get="{% url 'user-delete' item.id %}" 
+                                        hx-target="#dialog .modal-content" 
+                                        hx-trigger="click"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#dialog"
+                                    >
+                                        <i class="fa fa-trash"></i>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-users-slash fa-3x mb-3"></i>
+                <p class="mb-3">No staff members registered yet</p>
+                <button 
+                    class="btn btn-primary" 
+                    hx-get="{% url 'staff_create' %}" 
+                    hx-target="#dialog .modal-content" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#dialog"
+                >
+                    Add First Staff Member
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
-
-
-
-
-{%endblock%}
+<!-- Reusable Modal Structure -->
+<div id="dialog" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- Dynamic modal content will be loaded here via HTMX -->
+        </div>
+    </div>
+</div>
+{% endblock %}

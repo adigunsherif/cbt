@@ -1,54 +1,75 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
+<div class="container-fluid px-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Question Bank</h3>
+            <a href="{% url 'question-create' %}" class="btn btn-light rounded-pill">
+                <i class="fa fa-plus me-2"></i>Add New Question
+            </a>
+        </div>
 
-<h2>
-  Question Bank
-</h2>
-<a class="btn btn-success btn-rounded mb-2" href="{% url 'question-create' %}">Add
-  new question</a>
+        <div class="card-body">
+            {% include 'core/filter_form.html' %}
 
-  {% include 'core/filter_form.html' %}
+            {% if object_list %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 50px;">#</th>
+                            <th>Subject</th>
+                            <th>Class</th>
+                            <th>Question</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in object_list %}
+                        <tr>
+                            <td class="text-center">{{forloop.counter}}</td>
+                            <td>{{item.subject}}</td>
+                            <td>{{item.class_group}}</td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 300px;">
+                                    {{item.question | safe}}
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a 
+                                        href="{% url 'question-update' item.id %}" 
+                                        class="btn btn-outline-primary"
+                                    >
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a 
+                                        href="{% url 'question-delete' item.id %}" 
+                                        class="btn btn-outline-danger"
+                                    >
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
+            {% include 'pagination.html' %}
 
-<div>
-  {% if object_list %}
-  <div class="table-responsive">
-    <table class="table table-hover table-bordered mg-b-0">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Subject</th>
-          <th>Class</th>
-          <th> Question </th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in object_list %}
-        <tr>
-          <td> {{forloop.counter}} </td>
-          <td>{{item.subject}}</td>
-          <td> {{item.class_group}} </td>
-          <td>{{item.question | safe }} </td>
-          <td>
-            <a href="{% url 'question-update' item.id %}"><i
-                class="fa fa-edit"></i></a>
-            <a href="{% url 'question-delete' item.id  %}"><i
-                class="fa fa-trash text-danger"></i></a>
-          </td>
-
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% include 'pagination.html'  %}
-  </div>
-  {% else %}
-  <p>No question to show.</p>
-  {% endif %}
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-file-alt fa-3x mb-3"></i>
+                <p class="mb-3">No questions in the bank yet</p>
+                <a href="{% url 'question-create' %}" class="btn btn-primary">
+                    Create First Question
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
-
-
 {% endblock content %}

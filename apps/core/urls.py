@@ -14,6 +14,11 @@ urlpatterns = [
     ),
     path("staff/", views.StaffListView.as_view(), name="staff_list"),
     path("staff/create/", views.StaffCreateView.as_view(), name="staff_create"),
+    path(
+        "staff/<int:pk>/update/",
+        views.StaffUpdateView.as_view(),
+        name="staff-update",
+    ),
     path("user/<int:pk>/delete/", views.UserDeleteView.as_view(), name="user-delete"),
     path("termsession/", views.TermSessionView.as_view(), name="term_session"),
     path("term/create/", views.AcademicTermCreateView.as_view(), name="term_create"),

@@ -1,48 +1,65 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
-
-<h2 class="az-content-title mg-b-5 mg-b-lg-8">
-    {{exam}} Scores
-</h2>
-
-<div>
-    {% if scores %}
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered mg-b-0">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Student</th>
-                    <th>Score</th>
-                    <th>Started on</th>
-                    <th>Sumbitted on</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in scores %}
-                    <tr>
-                        <td>{{forloop.counter}} </td>
-                        <td>
-                            <a href="{% url 'score-detail' item.exam.id item.user.id %}">{{item.user}}</a>
-                        </td>
-                        <td>{{item.score}} / {{item.total_questions}} </td>
-                        <td>{{item.time_started}} </td>
-                        <td>{{item.time_completed}} </td>
-                        <td>
-                            <a href='#!' hx-get="{% url 'score-delete' item.id %}" class="text-danger" hx-target="#dialog" ><i class="fa fa-trash"></i> </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-            </table>
+<div class="container-fluid px-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">{{exam}} Scores</h3>
+            <span class="badge bg-light text-primary">Total Attempts: {{scores.count}}</span>
         </div>
-    {% else %}
-        <p>No Attempt for this exam yet.</p>
-    {% endif %}
+        
+        <div class="card-body p-0">
+            {% if scores %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 50px;">#</th>
+                            <th>Student</th>
+                            <th>Score</th>
+                            <th>Started</th>
+                            <th>Submitted</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in scores %}
+                        <tr>
+                            <td class="text-center">{{forloop.counter}}</td>
+                            <td>
+                                <a href="{% url 'score-detail' item.exam.id item.user.id %}" class="text-primary">
+                                    {{item.user}}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    {{item.score}} / {{item.total_questions}}
+                                </span>
+                            </td>
+                            <td>{{item.time_started|date:"M d, Y H:i"}}</td>
+                            <td>{{item.time_completed|date:"M d, Y H:i"}}</td>
+                            <td class="text-end">
+                                <a 
+                                    href='#!' 
+                                    hx-get="{% url 'score-delete' item.id %}" 
+                                    class="btn btn-sm btn-outline-danger" 
+                                    hx-target="#dialog"
+                                >
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-chart-bar fa-3x mb-3"></i>
+                <p class="mb-3">No attempts for this exam yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
-
-
 {% endblock content %}

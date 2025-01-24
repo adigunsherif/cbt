@@ -1,161 +1,190 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container my-4">
+    <h2 class="text-center mb-4">Manage Academic Information</h2>
+    <div class="row g-4">
 
-<div class="row my-2">
-    <div class="col">
-        <h3 class="">Terms</h3>
-        <span class="clickable-link" hx-get="{% url 'term_create' %}"
-            hx-target="#dialog" role="button">Click here to add a new Term</span>
+        <!-- Terms Section -->
+        <div class="col-md-12 col-lg-6">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-body">
+                    <h5 class="card-title text-primary d-flex align-items-center">
+                        <i class="fa fa-calendar-alt me-2"></i> Terms
+                    </h5>
+                    <p>
+                        <a href="#" hx-get="{% url 'term_create' %}" hx-target="#dialog" class="btn btn-primary btn-sm">
+                            <i class="fa fa-plus"></i> Add New Term
+                        </a>
+                    </p>
+                    {% if terms %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Term</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in terms %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <a href="#" hx-get="{% url 'term_update' item.id %}" hx-target="#dialog" class="text-primary me-3">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <a href="#" hx-get="{% url 'term_delete' item.id %}" hx-target="#dialog" class="text-danger">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted fst-italic">No terms available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
+        <!-- Session Section -->
+        <div class="col-md-12 col-lg-6">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-body">
+                    <h5 class="card-title text-success d-flex align-items-center">
+                        <i class="fa fa-clock me-2"></i> Sessions
+                    </h5>
+                    <p>
+                        <a href="#" hx-get="{% url 'session_create' %}" hx-target="#dialog" class="btn btn-success btn-sm">
+                            <i class="fa fa-plus"></i> Add New Session
+                        </a>
+                    </p>
+                    {% if sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Session</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in sessions %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <a href="#" hx-get="{% url 'session_update' item.id %}" hx-target="#dialog" class="text-success me-3">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <a href="#" hx-get="{% url 'session_delete' item.id %}" hx-target="#dialog" class="text-danger">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted fst-italic">No sessions available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-        {% if terms %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Term</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
+        <!-- Classes Section -->
+        <div class="col-md-12 col-lg-6">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-body">
+                    <h5 class="card-title text-info d-flex align-items-center">
+                        <i class="fa fa-chalkboard me-2"></i> Classes
+                    </h5>
+                    <p>
+                        <a href="#" hx-get="{% url 'class_create' %}" hx-target="#dialog" class="btn btn-info btn-sm">
+                            <i class="fa fa-plus"></i> Add New Class
+                        </a>
+                    </p>
+                    {% if classes %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-info">
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in classes %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <a href="#" hx-get="{% url 'class_update' item.id %}" hx-target="#dialog" class="text-info me-3">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <a href="#" hx-get="{% url 'class_delete' item.id %}" hx-target="#dialog" class="text-danger">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted fst-italic">No classes available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-                {% for item in terms %}
-                <tr>
-                    <td> {{item.name}} </td>
-                    <td>
-                        <span class="clickable-link" hx-get="{% url 'term_update' item.id %}"
-                            hx-target="#dialog" role="button"><i class="fa fa-edit"></i></span>
-                        <span class="clickable-link" hx-get="{% url 'term_delete' item.id %}"
-                            hx-target="#dialog" role="button"><i class="fa fa-trash text-danger"></i></span>
-                    </td>
-                </tr>
-                {% endfor %}
+        <!-- Subjects Section -->
+        <div class="col-md-12 col-lg-6">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-body">
+                    <h5 class="card-title text-warning d-flex align-items-center">
+                        <i class="fa fa-book me-2"></i> Subjects
+                    </h5>
+                    <p>
+                        <a href="#" hx-get="{% url 'subject_create' %}" hx-target="#dialog" class="btn btn-warning btn-sm text-dark">
+                            <i class="fa fa-plus"></i> Add New Subject
+                        </a>
+                    </p>
+                    {% if subjects %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-warning">
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in subjects %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <a href="#" hx-get="{% url 'subject_update' item.id %}" hx-target="#dialog" class="text-warning me-3">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <a href="#" hx-get="{% url 'subject_delete' item.id %}" hx-target="#dialog" class="text-danger">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted fst-italic">No subjects available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-            </tbody>
-        </table>
-
-        {% else %}
-        <p>There are currently no term yet.</p>
-
-        {% endif %}
-    </div>
-
-    <div class="col">
-        <h3 class="">Session</h3>
-        <span class="clickable-link" hx-get="{% url 'session_create' %}"
-            hx-target="#dialog" role="button">Click here to add a new Session</span>
-
-
-        {% if sessions %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Term</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-
-                {% for item in sessions %}
-                <tr>
-                    <td> {{item.name}} </td>
-                    <td>
-                        <span class="clickable-link" hx-get="{% url 'session_update' item.id %}"
-                            hx-target="#dialog" role="button"><i class="fa fa-edit"></i></span>
-                        <span class="clickable-link" hx-get="{% url 'session_delete' item.id %}"
-                            hx-target="#dialog" role="button"><i
-                                class="fa fa-trash text-danger"></i></span>
-                    </td>
-                </tr>
-                {% endfor %}
-
-            </tbody>
-        </table>
-
-        {% else %}
-        <p>There are currently no session yet.</p>
-
-        {% endif %}
-    </div>
-
-    <div class="col">
-        <h3 class="">Classes</h3>
-        <span class="clickable-link" hx-get="{% url 'class_create' %}"
-            hx-target="#dialog" role="button">Click here to add a new class</span>
-
-
-        {% if classes %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Class</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-
-                {% for item in classes %}
-                <tr>
-                    <td> {{item.name}} </td>
-                    <td>
-                        <span class="clickable-link" hx-get="{% url 'class_update' item.id%}"
-                            hx-target="#dialog" role="button"><i class="fa fa-edit"></i></span>
-                        <span class="clickable-link" hx-get="{% url 'class_delete' item.id %}"
-                            hx-target="#dialog" role="button"><i
-                                class="fa fa-trash text-danger"></i></span>
-                    </td>
-                </tr>
-                {% endfor %}
-
-            </tbody>
-        </table>
-
-        {% else %}
-        <p>There are currently no class yet. </p>
-
-        {% endif %}
-    </div>
-    <div class="col">
-        <h3 class="">Subjects</h3>
-        <span class="clickable-link" hx-get="{% url 'subject_create' %}"
-            hx-target="#dialog" role="button">Click here to add a new subject</span>
-
-
-        {% if subjects %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Term</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-
-                {% for item in subjects %}
-                <tr>
-                    <td> {{item.name}} </td>
-                    <td>
-                        <span class="clickable-link" hx-get="{% url 'subject_update' item.id%}"
-                            hx-target="#dialog" role="button"><i class="fa fa-edit"></i></span>
-                        <span class="clickable-link" hx-get="{% url 'subject_delete' item.id %}"
-                            hx-target="#dialog" role="button"><i
-                                class="fa fa-trash text-danger"></i></span>
-                    </td>
-                </tr>
-                {% endfor %}
-
-            </tbody>
-        </table>
-
-        {% else %}
-        <p>There are currently no subject yet. </p>
-
-        {% endif %}
     </div>
 </div>
-
-
-
-
-
-{%endblock%}
+{% endblock %}
