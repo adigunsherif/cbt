@@ -53,7 +53,9 @@ class QuestionCreateView(StaffAndAdminMixin, View):
             request.POST, queryset=Choice.objects.none()
         )
         if question_form.is_valid() and choice_formset.is_valid():
-            question = question_form.save()
+            question = question_form.save(commit=False)
+            question.author = request.user
+            question.save()
             choices = choice_formset.save(commit=False)
             for choice in choices:
                 choice.question = question

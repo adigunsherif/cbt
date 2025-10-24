@@ -35,7 +35,11 @@
 
     <div>
         {{ formset.management_form }}
-        {{ formset.non_form_errors }}
+        {% if formset.non_form_errors %}
+        <div class="alert alert-sm alert-danger">
+            {{ formset.non_form_errors }}
+        </div>
+        {% endif %}
         <table class="table table-bordered">
             <thead>
                 <tr>
