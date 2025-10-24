@@ -32,7 +32,7 @@ class UserCreateForm(UserCreationForm, ResponsiveForm):
 
 
 class UserUpdateForm(forms.ModelForm, ResponsiveForm):
-    password = forms.CharField(required=False)
+    new_password = forms.CharField(required=False)
 
     class Meta:
         model = User
@@ -42,11 +42,12 @@ class UserUpdateForm(forms.ModelForm, ResponsiveForm):
             "last_name",
             "gender",
             "student_class",
+            "new_password",
         ]
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        password = self.cleaned_data.get("password")
+        password = self.cleaned_data.get("new_password")
         if password:
             instance.set_password(password)
         if commit:
@@ -71,10 +72,10 @@ class StaffCreateForm(UserCreationForm, ResponsiveForm):
         instance.is_staff = True
         instance.save()
         return instance
-    
+
 
 class StaffUpdateForm(forms.ModelForm, ResponsiveForm):
-    password = forms.CharField(required=False)
+    new_password = forms.CharField(required=False)
 
     class Meta:
         model = User
@@ -83,18 +84,17 @@ class StaffUpdateForm(forms.ModelForm, ResponsiveForm):
             "first_name",
             "last_name",
             "gender",
-            "password",
+            "new_password",
         ]
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        password = self.cleaned_data.get("password")
+        password = self.cleaned_data.get("new_password")
         if password:
             instance.set_password(password)
         if commit:
             instance.save()
         return instance
-
 
 
 class AcademicSessionForm(forms.ModelForm, ResponsiveForm):

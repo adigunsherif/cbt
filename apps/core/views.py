@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -6,7 +8,12 @@ from django.db.models import OuterRef, Subquery
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, View
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import (
+    CreateView,
+    DeleteView,
+    FormView,
+    UpdateView,
+)
 
 from apps.core.forms import (
     AcademicSessionForm,
@@ -36,6 +43,100 @@ class StaffAndAdminMixin(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
         return self.request.user.is_staff
+
+
+# Create your views here.
+class HtmxSuccessRedirectMixin(SuccessMessageMixin):
+    jsAction = "showAlert"  # or fireButton
+    idToFire = None  #
+    is_used_for_modal = True
+
+    def get_id_to_fire(self):
+        return self.idToFire
+
+    def get_success_url(self):
+        if self.request.POST.get("next"):
+            return self.request.POST.get("next")
+        if self.request.GET.get("next"):
+            return self.request.GET.get("next")
+        return "/"
+
+    def form_valid(self, form):
+        if not self.is_used_for_modal:
+            return super().form_valid(form)
+
+        super().form_valid(form)
+        redirect_url = self.get_success_url()
+        response = HttpResponse()
+        response["HX-Trigger"] = json.dumps(
+            {
+                self.jsAction: {
+                    "message": self.success_message,
+                    "redirect_url": redirect_url,
+                    "idToFire": self.get_id_to_fire(),
+                }
+            }
+        )
+        return response
+
+
+class CustomCreateView(HtmxSuccessRedirectMixin, CreateView):
+    """Helper create view"""
+
+    page_title = None
+    template_name = "modal_create.html"
+
+    def get_page_title(self):
+        return self.page_title
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.get_page_title()
+        return context
+
+
+class CustomUpdateView(HtmxSuccessRedirectMixin, UpdateView):
+    """Helper update view"""
+
+    page_title = None
+    template_name = "modal_create.html"
+
+    def get_page_title(self):
+        return self.page_title
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.get_page_title() or self.object
+        return context
+
+
+class CustomDeleteView(HtmxSuccessRedirectMixin, DeleteView):
+    """Helper delete view"""
+
+    template_name = "modal_delete.html"
+    page_title = None
+
+    def get_page_title(self):
+        return self.page_title
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.get_page_title() or self.object
+        return context
+
+
+class CustomFormView(HtmxSuccessRedirectMixin, FormView):
+    """Helper create view"""
+
+    page_title = None
+
+    def get_page_title(self):
+        return self.page_title
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.get_page_title()
+        return context
 
 
 class DashboardView(LoginRequiredMixin, View):
@@ -95,25 +196,14 @@ class StudentCreateView(OnlyAdminMixin, CreateView):
         return HttpResponse(status=204)
 
 
-class StudentUpdateView(OnlyAdminMixin, SuccessMessageMixin, UpdateView):
+class StudentUpdateView(OnlyAdminMixin, CustomUpdateView):
     model = User
     form_class = UserUpdateForm
-    template_name = "modal_create.html"
     success_message = "User successfully updated."
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update student"
-        return context
 
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
-
-
-class UserDeleteView(OnlyAdminMixin, DeleteView):
+class UserDeleteView(OnlyAdminMixin, CustomDeleteView):
     model = User
-    template_name = "delete.html"
 
 
 class StaffListView(OnlyAdminMixin, ListView):
@@ -140,34 +230,14 @@ class StaffCreateView(OnlyAdminMixin, CreateView):
         errors = {}
         for field, error_list in form.errors.items():
             errors[field] = error_list[0]
-        return JsonResponse({
-            "success": False, 
-            "errors": errors
-        }, status=400)
+        return JsonResponse({"success": False, "errors": errors}, status=400)
 
-class StaffUpdateView(OnlyAdminMixin, SuccessMessageMixin, UpdateView):
+
+class StaffUpdateView(OnlyAdminMixin, CustomUpdateView):
     model = User
     form_class = StaffUpdateForm
-    template_name = "modal_create.html"
     success_message = "User successfully updated."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update staff"
-        return context
-
-    def form_valid(self, form):
-        self.object = form.save()
-        return JsonResponse({"success": True}, status=200)
-
-    def form_invalid(self, form):
-        errors = {}
-        for field, error_list in form.errors.items():
-            errors[field] = error_list[0]
-        return JsonResponse({
-            "success": False, 
-            "errors": errors
-        }, status=400)
+    page_title = "Update Staff"
 
 
 class TermSessionView(OnlyAdminMixin, View):
@@ -183,189 +253,106 @@ class TermSessionView(OnlyAdminMixin, View):
         return render(request, self.template_name, context)
 
 
-class AcademicTermCreateView(OnlyAdminMixin, CreateView):
+class AcademicTermCreateView(OnlyAdminMixin, CustomCreateView):
     model = AcademicTerm
     form_class = AcademicTermForm
-    template_name = "modal_create.html"
     success_url = "/"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Add new Term"
-        return context
-
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
+    page_title = "Add new Term"
 
 
-class TermUpdateView(OnlyAdminMixin, SuccessMessageMixin, UpdateView):
+class TermUpdateView(OnlyAdminMixin, CustomUpdateView):
     model = AcademicTerm
     form_class = AcademicTermForm
-    template_name = "modal_create.html"
     success_message = "Term successfully updated."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update Term"
-        return context
-
-    def form_valid(self, form):
-        form.save()
-        return HttpResponse(status=204)
+    page_title = "Update Term"
 
 
-class AcademicTermDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class AcademicTermDeleteView(LoginRequiredMixin, CustomDeleteView):
     model = AcademicTerm
-    template_name = "modal_delete.html"
     success_url = "/"
     success_message = "AcademicTerm successfully deleted."
 
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
 
-
-class AcademicSessionCreateView(OnlyAdminMixin, CreateView):
+class AcademicSessionCreateView(OnlyAdminMixin, CustomCreateView):
     model = AcademicSession
     form_class = AcademicSessionForm
-    template_name = "modal_create.html"
     success_url = "/"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Add new session"
-        return context
-
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
+    page_title = "Add new Session"
 
 
-class AcademicSessionDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class AcademicSessionDeleteView(LoginRequiredMixin, CustomDeleteView):
     model = AcademicSession
     template_name = "modal_delete.html"
     success_url = "/"
     success_message = "AcademicSession successfully deleted."
 
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
 
-
-class SessionUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class SessionUpdateView(LoginRequiredMixin, CustomUpdateView):
     model = AcademicSession
     form_class = AcademicSessionForm
-    template_name = "modal_create.html"
     success_message = "Session successfully updated."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update Session"
-        return context
-
-    def form_valid(self, form):
-        form.save()
-        return HttpResponse(status=204)
+    page_title = "Update Session"
 
 
-class SubjectCreateView(OnlyAdminMixin, CreateView):
+class SubjectCreateView(OnlyAdminMixin, CustomCreateView):
     model = Subject
     form_class = SubjectForm
     template_name = "modal_create.html"
     success_url = "/"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Add new subject"
-        return context
-
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
+    page_title = "Add new Subject"
 
 
-class SubjectDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class SubjectDeleteView(LoginRequiredMixin, CustomDeleteView):
     model = Subject
-    template_name = "modal_delete.html"
     success_url = "/"
     success_message = "Subject successfully deleted."
 
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
 
-
-class SubjectUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class SubjectUpdateView(LoginRequiredMixin, CustomUpdateView):
     model = Subject
     form_class = SubjectForm
     template_name = "modal_create.html"
     success_message = "Subject successfully updated."
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update subject"
-        return context
-
-    def form_valid(self, form):
-        form.save()
-        return HttpResponse(status=204)
+    page_title = "Update Subject"
 
 
-class ClassCreateView(OnlyAdminMixin, CreateView):
+class ClassCreateView(OnlyAdminMixin, CustomCreateView):
     model = StudentClass
     form_class = StudentClassForm
     template_name = "modal_create.html"
     success_url = "/"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Add new class"
-        return context
-
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
+    page_title = "Add new Class"
 
 
-class ClassDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class ClassDeleteView(LoginRequiredMixin, CustomDeleteView):
     model = StudentClass
-    template_name = "modal_delete.html"
     success_url = "/"
     success_message = "Class successfully deleted."
 
-    def form_valid(self, form):
-        super().form_valid(form)
-        return HttpResponse(status=204)
 
-
-class ClassUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class ClassUpdateView(LoginRequiredMixin, CustomUpdateView):
     model = StudentClass
     form_class = StudentClassForm
-    template_name = "modal_create.html"
     success_message = "Class successfully updated."
+    page_title = "Update Class"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Update class"
-        return context
-
-    def form_valid(self, form):
-        form.save()
-        return HttpResponse(status=204)
 
 # ERRORS
 def error_404(request, exception):
-    return render(request, 'error/404.html', status=404)
+    return render(request, "error/404.html", status=404)
+
 
 def error_500(request):
-    return render(request, 'error/500.html', status=500)
+    return render(request, "error/500.html", status=500)
+
 
 def error_503(request):
-    return render(request, 'error/503.html', status=503)
+    return render(request, "error/503.html", status=503)
+
 
 def error_401(request, exception=None):
-    return render(request, 'error/401.html', status=401)
+    return render(request, "error/401.html", status=401)
+
 
 def error_403(request, exception=None):
-    return render(request, 'error/403.html', status=403)
+    return render(request, "error/403.html", status=403)

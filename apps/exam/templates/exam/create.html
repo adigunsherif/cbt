@@ -1,12 +1,8 @@
 {% extends 'base.html' %}
 
+{% block pagetitle %}{{title}}{% endblock pagetitle %}
 
 {% block content %}
-
-<h2 class="az-content-title mg-b-5 mg-b-lg-8">
-    {{title}}
-</h2>
-
 
 <form method="POST" enctype='multipart/form-data'>
     {% csrf_token %}
@@ -20,7 +16,7 @@
 
     <div class="row">
         {% for field in form.visible_fields %}
-            <div class="form-group col-sm-6">
+            <div class="form-group {% if field.name == 'description' %}col-sm-12 {% else %}col-sm-6{% endif %}">
                 {{field.label_tag}}
                 {{field}}
                 <small>{{field.help_text}}</small>
@@ -33,6 +29,7 @@
         {% endfor %}
     </div>
     <button type="submit" class="submit-btn btn btn-primary">Save</button>
+    <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
 
 </form>
 

@@ -10,7 +10,8 @@ def default_site_config(apps, schema_editor):
     User = apps.get_model("core", "User")
     User.objects.create(
         username="admin",
-        fullname="Admin",
+        first_name="Admin",
+        last_name="Admin",
         password=make_password("cbt_admin"),
         is_staff=True,
         is_superuser=True,
@@ -32,6 +33,21 @@ def default_site_config(apps, schema_editor):
         ]
     )
 
+    AcademicTerm = apps.get_model("core", "AcademicTerm")
+    AcademicTerm.objects.bulk_create(
+        [
+            AcademicTerm(name="Term 1"),
+            AcademicTerm(name="Term 2"),
+        ]
+    )
+
+    AcademicSession = apps.get_model("core", "AcademicSession")
+    AcademicSession.objects.bulk_create(
+        [
+            AcademicSession(name="2024/2025"),
+        ]
+    )
+
 
 def reverse_default(apps, schema_editor):
     User = apps.get_model("core", "User")
@@ -40,6 +56,10 @@ def reverse_default(apps, schema_editor):
     Subject.objects.delete()
     StudentClass = apps.get_model("core", "StudentClass")
     StudentClass.objects.delete()
+    AcademicTerm = apps.get_model("core", "AcademicTerm")
+    AcademicTerm.objects.delete()
+    AcademicSession = apps.get_model("core", "AcademicSession")
+    AcademicSession.objects.delete()
 
 
 class Migration(migrations.Migration):

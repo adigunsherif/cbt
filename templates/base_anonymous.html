@@ -83,15 +83,10 @@
         {% endif %}
         {% endblock %}
 
-        <div class="card ">
-          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            {% block pagetitle %}{% endblock pagetitle %}
-          </div>
 
-          <div class="card-body">
-            {% block content %}
-            {% endblock content %}
-          </div>
+        {% block content %}
+        {% endblock content %}
+
       </div>
 
 
