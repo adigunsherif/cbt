@@ -191,9 +191,108 @@
                     sessionStorage.removeItem(v)
                 })
             })
+
         </script>
 
     {% endif %}
 
+        <script>
+            // ====== ANTI-MALPRACTICE GUARD ======
 
+(function() {
+  // Request fullscreen (prevents user from switching tabs easily)
+  document.documentElement.requestFullscreen().catch(()=>{});
+
+  // Disable right click
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Disable certain keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    // block refresh (F5), ctrl+r, ctrl+w, ctrl+n, alt+tab, esc
+    if (
+      e.key === 'F5' ||
+      (e.ctrlKey && ['r','R','w','W','n','N','t','T','s','S','p','P','c','C','v','V','x','X'].includes(e.key)) ||
+      e.key === 'Escape' ||
+      e.altKey
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  });
+
+
+  // Detect tab switch / focus loss
+    let tabSwitchCount = 0;
+
+    // Auto-submit function: idempotent, disables inputs (except CSRF),
+    // removes unload handler, shows a friendly message (SweetAlert if present),
+    // then submits the `#exam` form.
+    function autoSubmit() {
+        // Prevent double submission
+        if (window.__autoSubmitted) return;
+        window.__autoSubmitted = true;
+
+        // Remove the beforeunload prompt so submission can proceed
+        try { window.onbeforeunload = null; } catch (e) {}
+
+        var form = document.getElementById('exam');
+        if (form) {
+            // Disable all inputs except the CSRF token to avoid changes before submit
+            Array.from(form.elements).forEach(function(el) {
+                if (el.name !== 'csrfmiddlewaretoken') {
+                    el.disabled = true;
+                }
+            });
+        }
+
+        var doSubmit = function() {
+            if (form) {
+                form.submit();
+            } else if (window.jQuery) {
+                $('#exam').submit();
+            } else {
+                // As a last resort, try reloading (server should detect and finalize)
+                location.reload();
+            }
+        };
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Auto-submitting exam',
+                html: 'Your exam is being submitted due to multiple tab switches.',
+                allowOutsideClick: false,
+                didOpen: function() { Swal.showLoading(); }
+            });
+            // give the user a short moment to read the message
+            setTimeout(doSubmit, 1200);
+        } else {
+            setTimeout(doSubmit, 400);
+        }
+    }
+
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden) {
+            tabSwitchCount++;
+            if (tabSwitchCount === 1) {
+                alert("Warning: Leaving the exam window is not allowed!");
+            } else if (tabSwitchCount >= 2) {
+                alert("You have switched tabs multiple times. Your exam will be auto-submitted.");
+                autoSubmit();
+            }
+        }
+    });
+
+  // Disable navigation buttons
+  history.pushState(null, null, location.href);
+  window.onpopstate = function() {
+    history.pushState(null, null, location.href);
+    alert("Back navigation is disabled during the exam!");
+  };
+
+  // Optional: disable text selection / copy
+  document.onselectstart = () => false;
+  document.oncopy = () => false;
+})();
+        </script>
 {% endblock scripts %}

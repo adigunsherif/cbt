@@ -35,18 +35,22 @@
               </li>
 
               {% if request.user.is_staff %}
+                {% if request.user.is_superuser%}
                 <li class="nav-item">
                   <a class="nav-link active" aria-current="page"
                     href="{% url 'questionbank' %}">Question Bank</a>
                 </li>
+                {% endif %}
 
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                    aria-expanded="false">Admin Menu</a>
+                    aria-expanded="false">Menu</a>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'student_list' %}">Students</a></li>
-                    <li><a class="dropdown-item" href="{% url 'staff_list' %}">Staff</a></li>
-                    <li><a class="dropdown-item" href="{% url 'term_session' %}">Term/Session/Subject</a>
+                    <li><a class="dropdown-item" href="{% url 'student_list' %}">Ambassadors</a></li>
+                    {% if request.user.is_superuser%}
+                    <li><a class="dropdown-item" href="{% url 'staff_list' %}">Presidents</a></li>
+                    <li><a class="dropdown-item" href="{% url 'term_session' %}">Session/Subject</a>
+                    {% endif %}
                     </li>
                   </ul>
                 </li>

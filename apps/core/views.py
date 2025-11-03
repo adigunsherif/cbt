@@ -16,19 +16,19 @@ from django.views.generic.edit import (
 )
 
 from apps.core.forms import (
-    AcademicSessionForm,
-    AcademicTermForm,
+    RankingSessionForm,
     StaffCreateForm,
     StaffUpdateForm,
-    StudentClassForm,
+    AmbassadorRankForm,
     SubjectForm,
     UserCreateForm,
     UserUpdateForm,
+    ChapterCreateForm,
 )
-from apps.core.models import AcademicSession, AcademicTerm
+from apps.core.models import RankingSession
 from apps.exam.models import Exam
 
-from .models import StudentClass, Subject, User
+from .models import AmbassadorRank, Subject, User, Chapter
 
 
 class OnlyAdminMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -143,13 +143,13 @@ class DashboardView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user = self.request.user
         query = Exam.objects.select_related(
-            "class_group", "session", "term", "subject", "author"
+            "class_group", "session", "subject", "author"
         )
         if user.is_superuser:
             return self.admin_page(query)
         elif user.is_staff:
             return self.staff_page(query)
-        return self.student_page(query)
+        return self.ambassador_page(query)
 
     def admin_page(self, query):
         paginator = Paginator(query, 20)
@@ -165,22 +165,22 @@ class DashboardView(LoginRequiredMixin, View):
         context = {"exams": page_obj}
         return render(self.request, "admin.html", context)
 
-    def student_page(self, query):
+    def ambassador_page(self, query):
         exams = query.filter(
-            class_group=self.request.user.student_class, published=True
+            class_group=self.request.user.ambassador_rank, published=True
         )
         context = {"exams": exams}
         return render(self.request, "dashboard.html", context)
 
 
-class StudentListView(OnlyAdminMixin, ListView):
-    """Student Listview"""
+class AmbassadorListView(StaffAndAdminMixin, ListView):
+    """Ambassador Listview"""
 
     queryset = User.objects.filter(is_staff=False)
     template_name = "core/student_list.html"
 
 
-class StudentCreateView(OnlyAdminMixin, CreateView):
+class AmbassadorCreateView(StaffAndAdminMixin, CreateView):
     model = User
     form_class = UserCreateForm
     template_name = "modal_create.html"
@@ -188,15 +188,35 @@ class StudentCreateView(OnlyAdminMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Add new student"
+        context["title"] = "Add new ambassador"
         return context
 
     def form_valid(self, form):
+        # If a staff user (not superuser) is creating an ambassador, inherit
+        # the chapter from the creating user so the new ambassador is placed
+        # in the same chapter automatically.
+        if self.request.user.is_staff and not self.request.user.is_superuser:
+            form.instance.chapter = self.request.user.chapter
+
         super().form_valid(form)
         return HttpResponse(status=204)
 
+    def get_form(self, form_class=None):
+        """Hide the chapter field for staff users when creating ambassadors.
 
-class StudentUpdateView(OnlyAdminMixin, CustomUpdateView):
+        Staff-created ambassadors should inherit the staff's chapter automatically
+        (enforced in form_valid). Removing the field from the form prevents
+        staff from changing it in the UI.
+        """
+        form = super().get_form(form_class)
+        # If the creating user is a staff member (but not a superuser), don't show
+        # the chapter field in the create form UI.
+        if self.request.user.is_staff and not self.request.user.is_superuser:
+            form.fields.pop('chapter', None)
+        return form
+
+
+class AmbassadorUpdateView(StaffAndAdminMixin, CustomUpdateView):
     model = User
     form_class = UserUpdateForm
     success_message = "User successfully updated."
@@ -245,51 +265,51 @@ class TermSessionView(OnlyAdminMixin, View):
 
     def get(self, request):
         context = {
-            "terms": AcademicTerm.objects.all(),
-            "sessions": AcademicSession.objects.all(),
+            "sessions": RankingSession.objects.all(),
             "subjects": Subject.objects.all(),
-            "classes": StudentClass.objects.all(),
+            "ranks": AmbassadorRank.objects.all(),
+            "chapters": Chapter.objects.all(),
         }
         return render(request, self.template_name, context)
 
 
-class AcademicTermCreateView(OnlyAdminMixin, CustomCreateView):
-    model = AcademicTerm
-    form_class = AcademicTermForm
-    success_url = "/"
-    page_title = "Add new Term"
+# class AcademicTermCreateView(OnlyAdminMixin, CustomCreateView):
+#     model = AcademicTerm
+#     form_class = AcademicTermForm
+#     success_url = "/"
+#     page_title = "Add new Term"
 
 
-class TermUpdateView(OnlyAdminMixin, CustomUpdateView):
-    model = AcademicTerm
-    form_class = AcademicTermForm
-    success_message = "Term successfully updated."
-    page_title = "Update Term"
+# class TermUpdateView(OnlyAdminMixin, CustomUpdateView):
+#     model = AcademicTerm
+#     form_class = AcademicTermForm
+#     success_message = "Term successfully updated."
+#     page_title = "Update Term"
 
 
-class AcademicTermDeleteView(LoginRequiredMixin, CustomDeleteView):
-    model = AcademicTerm
-    success_url = "/"
-    success_message = "AcademicTerm successfully deleted."
+# class AcademicTermDeleteView(LoginRequiredMixin, CustomDeleteView):
+#     model = AcademicTerm
+#     success_url = "/"
+#     success_message = "AcademicTerm successfully deleted."
 
 
-class AcademicSessionCreateView(OnlyAdminMixin, CustomCreateView):
-    model = AcademicSession
-    form_class = AcademicSessionForm
+class RankingSessionCreateView(OnlyAdminMixin, CustomCreateView):
+    model = RankingSession
+    form_class = RankingSessionForm
     success_url = "/"
     page_title = "Add new Session"
 
 
-class AcademicSessionDeleteView(LoginRequiredMixin, CustomDeleteView):
-    model = AcademicSession
+class RankingSessionDeleteView(LoginRequiredMixin, CustomDeleteView):
+    model = RankingSession
     template_name = "modal_delete.html"
     success_url = "/"
-    success_message = "AcademicSession successfully deleted."
+    success_message = "RankingSession successfully deleted."
 
 
-class SessionUpdateView(LoginRequiredMixin, CustomUpdateView):
-    model = AcademicSession
-    form_class = AcademicSessionForm
+class RankingSessionUpdateView(LoginRequiredMixin, CustomUpdateView):
+    model = RankingSession
+    form_class = RankingSessionForm
     success_message = "Session successfully updated."
     page_title = "Update Session"
 
@@ -316,25 +336,32 @@ class SubjectUpdateView(LoginRequiredMixin, CustomUpdateView):
     page_title = "Update Subject"
 
 
-class ClassCreateView(OnlyAdminMixin, CustomCreateView):
-    model = StudentClass
-    form_class = StudentClassForm
+class RankCreateView(OnlyAdminMixin, CustomCreateView):
+    model = AmbassadorRank
+    form_class = AmbassadorRankForm
     template_name = "modal_create.html"
     success_url = "/"
-    page_title = "Add new Class"
+    page_title = "Add new Rank"
 
 
-class ClassDeleteView(LoginRequiredMixin, CustomDeleteView):
-    model = StudentClass
+class RankDeleteView(LoginRequiredMixin, CustomDeleteView):
+    model = AmbassadorRank
     success_url = "/"
-    success_message = "Class successfully deleted."
+    success_message = "Rank successfully deleted."
 
 
-class ClassUpdateView(LoginRequiredMixin, CustomUpdateView):
-    model = StudentClass
-    form_class = StudentClassForm
-    success_message = "Class successfully updated."
-    page_title = "Update Class"
+class RankUpdateView(LoginRequiredMixin, CustomUpdateView):
+    model = AmbassadorRank
+    form_class = AmbassadorRankForm
+    success_message = "Rank successfully updated."
+    page_title = "Update Rank"
+
+class ChapterCreateVuew(OnlyAdminMixin, CustomCreateView):
+    model = Chapter
+    form_class = ChapterCreateForm
+    template_name = "modal_create.html"
+    success_url = "/"
+    page_title = "Add new Chapter"
 
 
 # ERRORS

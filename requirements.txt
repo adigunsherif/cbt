@@ -1,10 +1,16 @@
 asgiref==3.8.1
+beautifulsoup4==4.14.2
 black==24.10.0
+certifi==2025.10.5
+charset-normalizer==3.4.4
 click==8.1.8
 Django==5.2.7
 django-environ==0.12.0
 django-filter==24.3
+django-rest-framework==0.1.0
+djangorestframework==3.16.1
 flake8==7.1.1
+idna==3.11
 isort==5.13.2
 mccabe==0.7.0
 mypy-extensions==1.0.0
@@ -14,6 +20,10 @@ pillow==11.1.0
 platformdirs==4.3.6
 pycodestyle==2.12.1
 pyflakes==3.2.0
+requests==2.32.5
 six==1.17.0
+soupsieve==2.8
 sqlparse==0.5.3
+typing_extensions==4.15.0
+urllib3==2.5.0
 whitenoise==6.8.2

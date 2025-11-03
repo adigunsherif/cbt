@@ -39,9 +39,11 @@ class BaseChoiceInlineFormSet(BaseInlineFormSet):
             raise ValidationError("You must mark exactly one choice as correct.")
 
 
-QuestionChoiceFormset = forms.modelformset_factory(
+QuestionChoiceFormset = forms.inlineformset_factory(
+    Question,
     Choice,
     form=QuestionChoiceForm,
+    exclude=("question",),
     extra=4,
     max_num=5,
     formset=BaseChoiceInlineFormSet,
