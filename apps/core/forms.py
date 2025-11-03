@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms.widgets import CheckboxInput, Textarea
 
-from .models import AcademicSession, AcademicTerm, StudentClass, Subject, User
+from .models import AmbassadorRank, RankingSession, Subject, User, Chapter
 
 
 class ResponsiveForm(forms.Form):
@@ -25,10 +25,12 @@ class UserCreateForm(UserCreationForm, ResponsiveForm):
             "first_name",
             "last_name",
             "gender",
-            "student_class",
+            "chapter",
+            "ambassador_rank",
             "password1",
             "password2",
         ]
+
 
 
 class UserUpdateForm(forms.ModelForm, ResponsiveForm):
@@ -37,11 +39,10 @@ class UserUpdateForm(forms.ModelForm, ResponsiveForm):
     class Meta:
         model = User
         fields = [
-            "username",
             "first_name",
             "last_name",
             "gender",
-            "student_class",
+            "ambassador_rank",
             "new_password",
         ]
 
@@ -63,6 +64,7 @@ class StaffCreateForm(UserCreationForm, ResponsiveForm):
             "first_name",
             "last_name",
             "gender",
+            "chapter",
             "password1",
             "password2",
         ]
@@ -84,6 +86,7 @@ class StaffUpdateForm(forms.ModelForm, ResponsiveForm):
             "first_name",
             "last_name",
             "gender",
+            "chapter",
             "new_password",
         ]
 
@@ -97,16 +100,16 @@ class StaffUpdateForm(forms.ModelForm, ResponsiveForm):
         return instance
 
 
-class AcademicSessionForm(forms.ModelForm, ResponsiveForm):
+class RankingSessionForm(forms.ModelForm, ResponsiveForm):
     class Meta:
-        model = AcademicSession
+        model = RankingSession
         exclude = ()
 
 
-class AcademicTermForm(forms.ModelForm, ResponsiveForm):
-    class Meta:
-        model = AcademicTerm
-        exclude = ()
+# class AcademicTermForm(forms.ModelForm, ResponsiveForm):
+#     class Meta:
+#         model = AcademicTerm
+#         exclude = ()
 
 
 class SubjectForm(forms.ModelForm, ResponsiveForm):
@@ -115,9 +118,9 @@ class SubjectForm(forms.ModelForm, ResponsiveForm):
         exclude = ()
 
 
-class StudentClassForm(forms.ModelForm, ResponsiveForm):
+class AmbassadorRankForm(forms.ModelForm, ResponsiveForm):
     class Meta:
-        model = StudentClass
+        model = AmbassadorRank
         exclude = ()
 
 
@@ -125,3 +128,9 @@ class SubjectUpdateForm(forms.ModelForm, ResponsiveForm):
     class Meta:
         model = Subject
         exclude = ()
+
+class ChapterCreateForm(forms.ModelForm, ResponsiveForm):
+    class Meta:
+        model = Chapter
+        exclude = ()
+

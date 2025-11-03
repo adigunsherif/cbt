@@ -7,34 +7,35 @@
 
 <div class="row g-4">
 
-    <!-- Terms Section -->
+
+    <!-- Chapter Section -->
     <div class="col-md-12 col-lg-6">
         <div class="card shadow-sm border-0 rounded">
             <div class="card-body">
-                <h5 class="card-title text-primary d-flex align-items-center justify-content-between">
-                    <div><i class="fa fa-calendar-alt me-2"></i> Terms</div>
-                    <div><a href="#" hx-get="{% url 'term_create' %}" hx-target="#dialog" class="btn btn-primary btn-sm">
-                        <i class="fa fa-plus"></i> Add New Term
-                    </a></div>
+                <h5 class="card-title text-success d-flex align-items-center justify-content-between">
+                    <span><i class="fa fa-clock me-2"></i> Chapters</span>
+                    <a href="#" hx-get="{% url 'chapter_create' %}" hx-target="#dialog" class="btn btn-success btn-sm">
+                        <i class="fa fa-plus"></i> Add New Chapter
+                    </a>
                 </h5>
-                {% if terms %}
+                {% if chapters %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
-                        <thead class="table-primary">
+                        <thead class="table-success">
                             <tr>
-                                <th>Term</th>
+                                <th>Chapters</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in terms %}
+                            {% for item in chapters %}
                             <tr>
-                                <td>{{ item.name }}</td>
+                                <td>{{ item.title }}</td>
                                 <td>
-                                    <a href="#" hx-get="{% url 'term_update' item.id %}" hx-target="#dialog" class="text-primary me-3">
+                                    <a href="#" hx-get="#" hx-target="#dialog" class="text-success me-3">
                                         <i class="fa fa-edit"></i> Edit
                                     </a>
-                                    <a href="#" hx-get="{% url 'term_delete' item.id %}" hx-target="#dialog" class="text-danger">
+                                    <a href="#" hx-get="#" hx-target="#dialog" class="text-danger">
                                         <i class="fa fa-trash"></i> Delete
                                     </a>
                                 </td>
@@ -44,7 +45,7 @@
                     </table>
                 </div>
                 {% else %}
-                <p class="text-muted fst-italic">No terms available.</p>
+                <p class="text-muted fst-italic">No chapters added .</p>
                 {% endif %}
             </div>
         </div>
@@ -77,7 +78,7 @@
                                     <a href="#" hx-get="{% url 'session_update' item.id %}" hx-target="#dialog" class="text-success me-3">
                                         <i class="fa fa-edit"></i> Edit
                                     </a>
-                                    <a href="#" hx-get="{% url 'session_delete' item.id %}" hx-target="#dialog" class="text-danger">
+                                    <a href="#" hx-get="{% url 'rankingsession_delete' item.id %}" hx-target="#dialog" class="text-danger">
                                         <i class="fa fa-trash"></i> Delete
                                     </a>
                                 </td>
@@ -98,29 +99,29 @@
         <div class="card shadow-sm border-0 rounded">
             <div class="card-body">
                 <h5 class="card-title text-info d-flex align-items-center justify-content-between">
-                    <span><i class="fa fa-chalkboard me-2"></i> Classes</span>
-                    <a href="#" hx-get="{% url 'class_create' %}" hx-target="#dialog" class="btn btn-info btn-sm">
-                        <i class="fa fa-plus"></i> Add New Class
+                    <span><i class="fa fa-chalkboard me-2"></i> Ranks</span>
+                    <a href="#" hx-get="{% url 'rank_create' %}" hx-target="#dialog" class="btn btn-info btn-sm">
+                        <i class="fa fa-plus"></i> Add New Rank
                     </a>
                 </h5>
-                {% if classes %}
+                {% if ranks %}
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-info">
                             <tr>
-                                <th>Class</th>
+                                <th>Ranks</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in classes %}
+                            {% for item in ranks %}
                             <tr>
                                 <td>{{ item.name }}</td>
                                 <td>
-                                    <a href="#" hx-get="{% url 'class_update' item.id %}" hx-target="#dialog" class="text-info me-3">
+                                    <a href="#" hx-get="{% url 'rank_update' item.id %}" hx-target="#dialog" class="text-info me-3">
                                         <i class="fa fa-edit"></i> Edit
                                     </a>
-                                    <a href="#" hx-get="{% url 'class_delete' item.id %}" hx-target="#dialog" class="text-danger">
+                                    <a href="#" hx-get="{% url 'rank_delete' item.id %}" hx-target="#dialog" class="text-danger">
                                         <i class="fa fa-trash"></i> Delete
                                     </a>
                                 </td>
@@ -130,7 +131,7 @@
                     </table>
                 </div>
                 {% else %}
-                <p class="text-muted fst-italic">No classes available.</p>
+                <p class="text-muted fst-italic">No Ranks available.</p>
                 {% endif %}
             </div>
         </div>

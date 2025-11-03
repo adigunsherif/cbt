@@ -2,13 +2,13 @@
 
 
 {% block pagetitle %}
-<h5>Student Management</h5>
+<h5>Ambassador Management</h5>
 <button
     class="btn btn-light rounded-pill"
     hx-get="{% url 'student_create' %}"
     hx-target="#dialog"
 >
-    <i class="fa fa-plus me-2"></i>Add Student
+    <i class="fa fa-plus me-2"></i>Add an Ambassador
 </button>
 {% endblock pagetitle %}
 
@@ -23,6 +23,7 @@
                     <th class="text-center" style="width: 50px;">#</th>
                     <th>Name</th>
                     <th>Username</th>
+                    <th>Chapter</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -32,6 +33,7 @@
                     <td class="text-center">{{forloop.counter}}</td>
                     <td>{{item.get_full_name}}</td>
                     <td>{{item.username}}</td>
+                    <td>{{item.chapter.title}}</td>
                     <td class="text-end">
                         <div class="btn-group btn-group-sm" role="group">
                             <span
@@ -58,13 +60,13 @@
     {% else %}
     <div class="text-center py-5 text-muted">
         <i class="fa fa-users-slash fa-3x mb-3"></i>
-        <p class="mb-3">No students registered yet</p>
+        <p class="mb-3">No ambassadors registered yet</p>
         <button
             class="btn btn-primary"
             hx-get="{% url 'student_create' %}"
             hx-target="#dialog"
         >
-            Add First Student
+            Add First Ambassador
         </button>
     </div>
     {% endif %}

@@ -11,14 +11,14 @@ from django.utils import timezone
 from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from apps.core.views import StaffAndAdminMixin
+from apps.core.views import StaffAndAdminMixin, OnlyAdminMixin
 
 from . import forms
 from .filters import QuestionFilter
 from .models import Answer, Choice, Exam, Question
 
 
-class QuestionBankListView(StaffAndAdminMixin, FilterView):
+class QuestionBankListView(OnlyAdminMixin, FilterView):
     queryset = Question.objects.select_related("subject")
     template_name = "exam/questionbank.html"
     filterset_class = QuestionFilter
@@ -31,13 +31,16 @@ class QuestionBankListView(StaffAndAdminMixin, FilterView):
         return queryset
 
 
-class QuestionCreateView(StaffAndAdminMixin, View):
+class QuestionCreateView(OnlyAdminMixin, View):
     template_name = "exam/question_form.html"
     question_form_class = forms.QuestionForm
     choice_formset_class = forms.QuestionChoiceFormset
 
     def get(self, request, *args, **kwargs):
-        formset = self.choice_formset_class(queryset=Choice.objects.none())
+        # Inline formsets require a parent instance so Django can set up
+        # the ForeignKey metadata (fk). Use an empty Question instance
+        # for the create form so the inline formset is correctly initialized.
+        formset = self.choice_formset_class(instance=Question())
         context = {
             "form": self.question_form_class(),
             "formset": formset,
@@ -49,8 +52,10 @@ class QuestionCreateView(StaffAndAdminMixin, View):
         question_form = self.question_form_class(
             request.POST,
         )
+        # Provide the form's instance to the inline formset so Django can
+        # set up the ForeignKey metadata (fk) before validation.
         choice_formset = self.choice_formset_class(
-            request.POST, queryset=Choice.objects.none()
+            request.POST, instance=question_form.instance
         )
         if question_form.is_valid() and choice_formset.is_valid():
             question = question_form.save(commit=False)
@@ -73,7 +78,7 @@ class QuestionCreateView(StaffAndAdminMixin, View):
         return Exam.objects.get(pk=self.kwargs["exam_id"])
 
 
-class QuestionDeleteView(StaffAndAdminMixin, SuccessMessageMixin, DeleteView):
+class QuestionDeleteView(OnlyAdminMixin, SuccessMessageMixin, DeleteView):
     model = Question
     template_name = "delete.html"
     success_message = "Question successfully deleasted"
@@ -85,7 +90,7 @@ class QuestionDeleteView(StaffAndAdminMixin, SuccessMessageMixin, DeleteView):
         return context
 
 
-class ExamCreateView(StaffAndAdminMixin, SuccessMessageMixin, CreateView):
+class ExamCreateView(OnlyAdminMixin, SuccessMessageMixin, CreateView):
     model = Exam
     form_class = forms.ExamForm
     template_name = "exam/create.html"
@@ -101,7 +106,7 @@ class ExamCreateView(StaffAndAdminMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class ExamUpdateView(StaffAndAdminMixin, SuccessMessageMixin, UpdateView):
+class ExamUpdateView(OnlyAdminMixin, SuccessMessageMixin, UpdateView):
     model = Exam
     form_class = forms.ExamForm
     template_name = "exam/create.html"
@@ -113,7 +118,7 @@ class ExamUpdateView(StaffAndAdminMixin, SuccessMessageMixin, UpdateView):
         return context
 
 
-class ExamDeleteView(StaffAndAdminMixin, DeleteView):
+class ExamDeleteView(OnlyAdminMixin, DeleteView):
     model = Exam
     template_name = "delete.html"
     success_url = "/"
@@ -130,7 +135,7 @@ class ExamDetailView(LoginRequiredMixin, DetailView):
     template_name = "exam/exam_detail.html"
 
 
-class AddQuestionView(StaffAndAdminMixin, View):
+class AddQuestionView(OnlyAdminMixin, View):
     """Add question to exam directly. This creates the question
     to question banks and also adds it to the exam.
     """
@@ -141,7 +146,9 @@ class AddQuestionView(StaffAndAdminMixin, View):
 
     def get(self, request, *args, **kwargs):
         exam = self.get_exam
-        formset = self.choice_formset_class(queryset=Choice.objects.none())
+        # Use an empty Question instance so the inline formset has FK metadata
+        # when rendering choices for a new question being added to the exam.
+        formset = self.choice_formset_class(instance=Question())
         formset.extra = exam.choices_per_question
         formset.max_num = exam.choices_per_question
         context = {
@@ -157,8 +164,10 @@ class AddQuestionView(StaffAndAdminMixin, View):
         question_form = self.question_form_class(
             request.POST,
         )
+        # Pass the question form's instance to the inline formset so it has
+        # the required foreign-key metadata during validation.
         choice_formset = self.choice_formset_class(
-            request.POST, queryset=Choice.objects.none()
+            request.POST, instance=question_form.instance
         )
         if question_form.is_valid() and choice_formset.is_valid():
             question = question_form.save()
@@ -182,7 +191,7 @@ class AddQuestionView(StaffAndAdminMixin, View):
         return Exam.objects.get(pk=self.kwargs["exam_id"])
 
 
-class AddQuestionFromBankView(StaffAndAdminMixin, View):
+class AddQuestionFromBankView(OnlyAdminMixin, View):
     """Page responsible for picking question from question bank to an exam."""
 
     template_name = "exam/add_question_from_bank.html"
@@ -204,7 +213,7 @@ class AddQuestionFromBankView(StaffAndAdminMixin, View):
         return redirect(exam)
 
 
-class QuestionUpdateView(StaffAndAdminMixin, View):
+class QuestionUpdateView(OnlyAdminMixin, View):
     form_class = forms.QuestionForm
     formset_class = forms.QuestionUpdateChoiceFormset
     template_name = "exam/question_form.html"
@@ -245,7 +254,7 @@ class QuestionUpdateView(StaffAndAdminMixin, View):
         return render(request, self.template_name, context)
 
 
-class RemoveQuestionFromExamView(StaffAndAdminMixin, DeleteView):
+class RemoveQuestionFromExamView(OnlyAdminMixin, DeleteView):
     model = Question
     template_name = "delete.html"
     success_message = "Question successfully removed."
@@ -355,7 +364,7 @@ class ExamScoreDetailView(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-class ScoreDeleteView(StaffAndAdminMixin, DeleteView):
+class ScoreDeleteView(OnlyAdminMixin, DeleteView):
     model = Answer
     template_name = "modal_delete.html"
     success_message = "Score successfully deleted"

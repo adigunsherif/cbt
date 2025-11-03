@@ -5,11 +5,11 @@ from . import views
 
 urlpatterns = [
     path("", views.DashboardView.as_view(), name="dashboard"),
-    path("students/", views.StudentListView.as_view(), name="student_list"),
-    path("students/create/", views.StudentCreateView.as_view(), name="student_create"),
+    path("students/", views.AmbassadorListView.as_view(), name="student_list"),
+    path("students/create/", views.AmbassadorCreateView.as_view(), name="student_create"),
     path(
         "students/<int:pk>/update/",
-        views.StudentUpdateView.as_view(),
+        views.AmbassadorUpdateView.as_view(),
         name="student-update",
     ),
     path("staff/", views.StaffListView.as_view(), name="staff_list"),
@@ -21,30 +21,20 @@ urlpatterns = [
     ),
     path("user/<int:pk>/delete/", views.UserDeleteView.as_view(), name="user-delete"),
     path("termsession/", views.TermSessionView.as_view(), name="term_session"),
-    path("term/create/", views.AcademicTermCreateView.as_view(), name="term_create"),
-    path(
-        "term/delete/<int:pk>/",
-        views.AcademicTermDeleteView.as_view(),
-        name="term_delete",
-    ),
-    path(
-        "term/<int:pk>/update/",
-        views.TermUpdateView.as_view(),
-        name="term_update",
-    ),
+
     path(
         "session/create/",
-        views.AcademicSessionCreateView.as_view(),
+        views.RankingSessionCreateView.as_view(),
         name="session_create",
     ),
     path(
         "session/delete/<int:pk>/",
-        views.AcademicSessionDeleteView.as_view(),
-        name="session_delete",
+        views.RankingSessionDeleteView.as_view(),
+        name="rankingsession_delete",
     ),
     path(
         "session/<int:pk>/update/",
-        views.SessionUpdateView.as_view(),
+        views.RankingSessionUpdateView.as_view(),
         name="session_update",
     ),
     path(
@@ -64,17 +54,22 @@ urlpatterns = [
     ),
     path(
         "class/create/",
-        views.ClassCreateView.as_view(),
-        name="class_create",
+        views.RankCreateView.as_view(),
+        name="rank_create",
     ),
     path(
         "class/delete/<int:pk>/",
-        views.ClassDeleteView.as_view(),
-        name="class_delete",
+        views.RankDeleteView.as_view(),
+        name="rank_delete",
     ),
     path(
         "class/<int:pk>/update/",
-        views.ClassUpdateView.as_view(),
-        name="class_update",
+        views.RankUpdateView.as_view(),
+        name="rank_update",
     ),
+    path(
+        "chapter/create/",
+        views.ChapterCreateVuew.as_view(),
+        name="chapter_create"
+    )
 ]

@@ -11,14 +11,17 @@ class Gender:
     ]
 
 
+
 class User(AbstractUser):
     """Extends the user's table"""
 
     gender = models.CharField(choices=Gender.GENDER_CHOICES, max_length=10)
     is_active = models.BooleanField(default=True)
-    student_class = models.ForeignKey(
-        "StudentClass", on_delete=models.SET_NULL, null=True, blank=True
+    ambassador_rank = models.ForeignKey(
+        "AmbassadorRank", on_delete=models.SET_NULL, null=True, blank=True
     )
+    chapter = models.ForeignKey("Chapter", on_delete=models.SET_NULL, blank=True, null=True)
+
 
 
 class Subject(models.Model):
@@ -31,21 +34,31 @@ class Subject(models.Model):
         return self.name
 
 
-class StudentClass(models.Model):
-    """Student class category table"""
+class AmbassadorRank(models.Model):
+    """Ambassador rank table"""
 
     name = models.CharField(max_length=200, unique=True)
 
     class Meta:
-        verbose_name = "Class"
-        verbose_name_plural = "Classes"
+        verbose_name = "Ambassador Rank"
+        verbose_name_plural = "Ambassador Ranks"
         ordering = ["name"]
 
     def __str__(self):
         return self.name
 
 
-class AcademicTerm(models.Model):
+# class AcademicTerm(models.Model):
+#     name = models.CharField(max_length=200, unique=True)
+
+#     class Meta:
+#         ordering = ["name"]
+
+#     def __str__(self):
+#         return self.name
+
+
+class RankingSession(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
     class Meta:
@@ -54,12 +67,11 @@ class AcademicTerm(models.Model):
     def __str__(self):
         return self.name
 
-
-class AcademicSession(models.Model):
-    name = models.CharField(max_length=200, unique=True)
+class Chapter(models.Model):
+    title = models.CharField(max_length=200, unique=True)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["title"]        
 
     def __str__(self):
-        return self.name
+        return self.title

@@ -5,9 +5,8 @@ from django.db import models
 from django.urls import reverse
 
 from apps.core.models import (
-    AcademicSession,
-    AcademicTerm,
-    StudentClass,
+    RankingSession,
+    AmbassadorRank,
     Subject,
     User,
 )
@@ -15,7 +14,7 @@ from apps.core.models import (
 
 class Question(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    class_group = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
+    class_group = models.ForeignKey(AmbassadorRank, on_delete=models.CASCADE)
     question = models.TextField()
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -38,9 +37,9 @@ class Exam(models.Model):
         ("exam", "Exam"),
     ]
     title = models.CharField(max_length=200)
-    class_group = models.ForeignKey(StudentClass, on_delete=models.CASCADE)
-    session = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)
-    term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE)
+    class_group = models.ForeignKey(AmbassadorRank, on_delete=models.CASCADE)
+    session = models.ForeignKey(RankingSession, on_delete=models.CASCADE)
+    # term = models.ForeignKey(AcademicTerm, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     exam_type = models.CharField(max_length=100, choices=EXAM_TYPE_CHOICES)
     duration = models.IntegerField(help_text="Number of minutes.")

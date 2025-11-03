@@ -1,3 +1,4 @@
+
 """
 Django settings for cbt project.
 
@@ -9,7 +10,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 import environ
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     # set casting, default value
-    DEBUG=(bool),
+    DEBUG=(bool, False),
     SECURE_SSL_REDIRECT=(bool),
     EMAIL_USE_TLS=(bool),
     ALLOWED_HOSTS=(list),
@@ -28,18 +29,18 @@ env = environ.Env(
 
 
 # Take environment variables from .env file
-environ.Env.read_env(BASE_DIR / ".env")
+environ.Env.read_env(os.path.join(BASE_DIR, 'example.env')) 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 
 # Application definition
